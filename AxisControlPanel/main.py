@@ -20,6 +20,13 @@ APP_ID = "20000000000004"
 APP_TEMPLATE_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'icube_project_template')
 APP_TRIGGER_RETAIN_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'TriggerRetain')
 
+# Cambio progetto robusto: reboot di sistema (non RestartDevice), sync, verifica,
+# stato su disco per il watchdog sull'host. Vedi docs/switch_guide.md
+import project_switch
+
+project_switch.APP_PROJECT_NAME = APP_PROJECT_NAME
+project_switch.PROJECTS_DIR = '/opt/plcnext/projects'
+
 def run_bash(cmd):
     """Executes a bash command and logs the output."""
     try:
@@ -36,91 +43,20 @@ def run_bash(cmd):
     return True
 
 def setup_parallel_project():
-    """Executed on App START. Deploys and prepares the parallel project."""
-    try:
-        target_project_dir = f"/opt/plcnext/projects/{APP_PROJECT_NAME}"
-        current_target = os.path.realpath('/opt/plcnext/projects/current')
+    """utente -> template. La logica vera sta in project_switch (reboot reale)."""
+    ok, msg = project_switch.activate_app_project(
+        APP_PROJECT_NAME, APP_TEMPLATE_DIR, APP_TRIGGER_RETAIN_DIR
+    )
+    logger.info("activate_app_project -> ok=%s msg=%s", ok, msg)
+    return ok
 
-        if APP_PROJECT_NAME in current_target:
-            logger.info("App project is already active. No action needed.")
-            return
-
-        logger.info("App Startup detected: Configuring parallel project...")
-
-        # 0. Deploy the bundled iCube project if it doesn't exist on the PLC yet
-        if not os.path.exists(target_project_dir):
-            if not os.path.exists(APP_TEMPLATE_DIR):
-                logger.error(f"CRITICAL: Bundled project template not found at {APP_TEMPLATE_DIR}")
-                return
-            
-            logger.info(f"First run: Deploying bundled iCube project to {target_project_dir}...")
-            # We copy the template using bash to preserve Linux permissions easily
-            run_bash(f"cp -r {APP_TEMPLATE_DIR} {target_project_dir}")
-            
-            # Ensure the plcnext user owns it. 
-            # Note: Using UID/GID 999:999 because the user 'plcnext' doesn't exist inside the container's /etc/passwd
-            run_bash(f"chown -R 1002:1002 {target_project_dir}")
-   
-        # Write "backup" inside /opt/plcnext/user/BackupAction.txt to trigger the creation of the retain file when stopping
-        run_bash("echo -n 'backup' > /opt/plcnext/user/BackupAction.txt")
-        
-        # 1. (REMOVED) We no longer stop the PLC here, because stopping it might kill this container before it can finish!
-        # Files are copied to a new directory anyway, so it's safe to do while the PLC is running.
-        
-        # 2. Remove TriggerRetain from Default folder to avoid double-loading crash
-        # The AxisControlPanel project already embeds its own TriggerRetain library.
-        run_bash("rm -f /opt/plcnext/projects/Default/TriggerRetain.acf.config")
-    
-        # 3. Copy EtherCAT hardware configuration from the user project to the app
-        run_bash(f"cp -r /opt/plcnext/projects/PCWE/Io/Arp.Io.Ecat {target_project_dir}/Io/")
-        
-        # 4. Copy the Motion Control XML files
-        run_bash(f"cp /opt/plcnext/projects/PCWE/Plc/MC/startup/axis.xml {target_project_dir}/Plc/MC/startup/")
-        run_bash(f"cp /opt/plcnext/projects/PCWE/Plc/MC/startup/servonet.xml {target_project_dir}/Plc/MC/startup/")
-
-        # 5. Change the symlink to point to the app project 
-        run_bash(f"ln -sfn {target_project_dir} /opt/plcnext/projects/current")
-        
-        # 6. Reboot the controller via gRPC
-        logger.info("Triggering hardware reboot via gRPC to load new project...")
-        # Aggiungo un piccolo sleep per essere sicuri che il comando 'backup' sia stato scritto
-        time.sleep(1)
-        run_bash("python3 -c \"import sys; sys.path.append('/usr/local/lib/python3.9/site-packages'); import grpc; from pxc_grpc.Device.Interface import IDeviceControlService_pb2_grpc, IDeviceControlService_pb2; from google.protobuf import empty_pb2; channel = grpc.insecure_channel('unix:///run/plcnext/grpc.sock'); stub = IDeviceControlService_pb2_grpc.IDeviceControlServiceStub(channel); stub.RestartDevice(empty_pb2.Empty())\"")
-        
-        logger.info("Parallel project activation finished. Device is rebooting.")
-        
-    except Exception as e:
-        logger.error(f"Critical failure during parallel project setup: {e}")
 
 def teardown_parallel_project():
-    """Executed on App STOP. Restores the original user project."""
-    try:
-        # Check if the symlink is actually pointing to our app
-        current_target = os.path.realpath('/opt/plcnext/projects/current')
-        if APP_PROJECT_NAME not in current_target:
-            return # The app wasn't active on the PLC, do nothing
+    """template -> utente. La logica vera sta in project_switch (reboot reale)."""
+    ok, msg = project_switch.activate_user_project(APP_PROJECT_NAME)
+    logger.info("activate_user_project -> ok=%s msg=%s", ok, msg)
+    return ok
 
-        logger.info("App Stop detected: Modifying project symlink immediately...")
-        
-        # Write "restore" inside /opt/plcnext/user/BackupAction.txt to trigger the restoration of the retain data when loading the project
-        run_bash("echo -n 'restore' > /opt/plcnext/user/BackupAction.txt")
-        
-        # Let’s change the symlink straight away, quickly and securely
-        run_bash("cd /opt/plcnext/projects && ln -sfn /opt/plcnext/projects/PCWE /opt/plcnext/projects/current")
-        
-        # Restore TriggerRetain to Default because PCWE project needs it
-        logger.info("Restoring TriggerRetain component to /Default/...")
-        run_bash(f"cp {APP_TRIGGER_RETAIN_DIR}/TriggerRetain.acf.config /opt/plcnext/projects/Default/TriggerRetain.acf.config")
-        
-        # Now let’s order the reboot
-        logger.info("Triggering hardware reboot via gRPC to load original project...")
-        time.sleep(1)
-        run_bash("python3 -c \"import sys; sys.path.append('/usr/local/lib/python3.9/site-packages'); import grpc; from pxc_grpc.Device.Interface import IDeviceControlService_pb2_grpc, IDeviceControlService_pb2; from google.protobuf import empty_pb2; channel = grpc.insecure_channel('unix:///run/plcnext/grpc.sock'); stub = IDeviceControlService_pb2_grpc.IDeviceControlServiceStub(channel); stub.RestartDevice(empty_pb2.Empty())\"")
-        
-        logger.info("User project restore sequence finished in python.")
-        
-    except Exception as e:
-        logger.error(f"Critical failure during parallel project teardown: {e}")
 
 from flask import Flask, request, jsonify, render_template
 from flask_cors import CORS
@@ -198,57 +134,24 @@ def check_project_state():
         return project_state
 
 def _do_project_switch(action):
-    """Run setup or teardown in a background thread."""
+    """Esegue il cambio progetto. Il riavvio lo chiude project_switch: il
+    container muore qui, quindi NON si aspetta piu' il ritorno del PLC in questo
+    processo (era codice morto). Il completimento lo verifica host/switch-watchdog.sh
+    leggendo /opt/plcnext/user/switch.state."""
     global project_state
     try:
         if action == 'activate':
-            setup_parallel_project()
+            ok = setup_parallel_project()
         else:
-            teardown_parallel_project()
-
-        # Wait for PLC to finish restarting and gRPC to become responsive
-        logger.info("Waiting for PLC to restart and gRPC to become ready...")
-        grpc_ready = False
-        for attempt in range(30):  # Max 30 attempts × 3s = 90s
-            time.sleep(3)
-            try:
-                # Re-initialize gRPC client with a fresh connection
-                init_grpc_client()
-                if grpc_client:
-                    # Try an actual gRPC read to verify PLC runtime is up
-                    test_result = grpc_client.read_single("Arp.Plc.Eclr/Main1.AxisController.MC_Power.Status")
-                    if test_result.get('success', False) or test_result.get('type_code', 0) != 0:
-                        logger.info(f"gRPC confirmed ready after {(attempt+1)*3}s")
-                        grpc_ready = True
-                        break
-            except Exception as e:
-                logger.debug(f"gRPC not ready yet (attempt {attempt+1}): {e}")
-                continue
-        
-        if not grpc_ready:
-            logger.warning("gRPC readiness timeout after 90s, proceeding anyway")
-
+            ok = teardown_parallel_project()
         with project_state_lock:
-            current_target = os.path.realpath('/opt/plcnext/projects/current')
-            if APP_PROJECT_NAME in current_target:
-                project_state = 'app_project'
-            else:
-                project_state = 'user_project'
-
-        logger.info(f"Project switch completed. New state: {project_state}")
+            project_state = 'app_project' if action == 'activate' else 'user_project'
+        if not ok:
+            logger.error("Project switch reported failure; see switch.state")
     except Exception as e:
-        logger.error(f"Project switch failed: {e}")
+        logger.error(f"Project switch failed: {e}", exc_info=True)
         with project_state_lock:
-            # Fallback: re-check real state
-            try:
-                current_target = os.path.realpath('/opt/plcnext/projects/current')
-                if APP_PROJECT_NAME in current_target:
-                    project_state = 'app_project'
-                else:
-                    project_state = 'user_project'
-            except:
-                project_state = 'user_project'
-
+            check_project_state()
 
 
 LOG_EVENT_OUTPUTS = {
@@ -339,17 +242,17 @@ def init_grpc_client():
         return False
 
 def graceful_shutdown(signum, frame):
-    """Handle shutdown signals"""
-    logger.info(f"Received signal {signum}, shutting down gracefully...")
-    
-    # Safety net: restore original PLC project if the app project is active
-    if project_state == 'app_project':
-        logger.info("App project is active, restoring user project before exit...")
-        teardown_parallel_project()
-    else:
-        logger.info("User project is already active, no teardown needed.")
-    
+    """Handle shutdown signals.
+
+    NON si fa nessun teardown qui: un SIGTERM arriva anche quando il WBM ferma
+    l'app, quando il container viene aggiornato o quando il controller riavvia.
+    Riportare il symlink a PCWE in quei casi e' sbagliato (e se il container
+    viene ucciso a meta' switch si resta in uno stato indefinito). Il cambio
+    progetto e' esplicito: solo /api/v1/project/switch.
+    """
+    logger.info(f"Received signal {signum}, exiting (no project teardown).")
     sys.exit(0)
+
 
 signal.signal(signal.SIGINT, graceful_shutdown)
 signal.signal(signal.SIGTERM, graceful_shutdown)
@@ -1041,13 +944,16 @@ if __name__ == '__main__':
     check_project_state()
     logger.info(f"Initial project state: {project_state}")
     
-    # 2. Link the ACF component ONLY if we are in the user_project.
-    # If we are in the app_project (AxisControlPanel), it already embeds TriggerRetain.
-    if project_state == 'user_project':
-        logger.info("Registration of the ACF component in /Default/...")
-        run_bash(f"cp {APP_TRIGGER_RETAIN_DIR}/TriggerRetain.acf.config /opt/plcnext/projects/Default/TriggerRetain.acf.config")
+    # 2. Componente ACF: registrazione UNICA e sempre presente.
+    #    Prima veniva cancellato quando il progetto app era attivo: risultato,
+    #    su questo controller il componente non esisteva mai (backups/ vuota,
+    #    BackupAction.txt "restore" mai consumato -> retain non conservati).
+    if project_switch.install_acf_component(
+            APP_TRIGGER_RETAIN_DIR,
+            project_root=os.path.realpath('/opt/plcnext/projects/current')):
+        logger.info("Componente ACF TriggerRetain registrato in /opt/plcnext/projects/Default/")
     else:
-        logger.info("App project active. Skipping ACF registration to avoid double-loading.")
+        logger.error("Registrazione componente ACF FALLITA: retain non disponibile")
 
     # 2. Load JSON configuration files
     load_json_configs()
