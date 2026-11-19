@@ -1,0 +1,425 @@
+{
+  "MC_Power": {
+    "category": "Control",
+    "description": "Enable/Disable axis power",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Power enable command" },
+      "EnablePositive": { "type": "BOOL", "description": "Enable positive direction" },
+      "EnableNegative": { "type": "BOOL", "description": "Enable negative direction" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "Status": { "type": "BOOL", "description": "Power is enabled" },
+      "Busy": { "type": "BOOL", "description": "Powering on/off in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_Reset": {
+    "category": "Control",
+    "description": "Reset axis errors",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Execute reset on rising edge" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Reset completed" },
+      "Busy": { "type": "BOOL", "description": "Reset in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_Stop": {
+    "category": "Control",
+    "description": "Stop axis with deceleration",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start stop on rising edge" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Stop completed" },
+      "Busy": { "type": "BOOL", "description": "Stopping in progress" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_MoveAbsolute": {
+    "category": "Positioning",
+    "description": "Move to absolute position",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start move on rising edge" },
+      "Position": { "type": "LREAL", "description": "Target position" },
+      "Velocity": { "type": "LREAL", "description": "Maximum velocity" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration rate" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "Direction": { "type": "INT", "description": "Movement direction" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Move completed" },
+      "Busy": { "type": "BOOL", "description": "Move in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_MoveRelative": {
+    "category": "Positioning",
+    "description": "Move relative distance",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start move on rising edge" },
+      "Distance": { "type": "LREAL", "description": "Relative distance" },
+      "Velocity": { "type": "LREAL", "description": "Maximum velocity" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration rate" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Move completed" },
+      "Busy": { "type": "BOOL", "description": "Move in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_MoveVelocity": {
+    "category": "Velocity",
+    "description": "Continuous velocity movement",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start move on rising edge" },
+      "Velocity": { "type": "LREAL", "description": "Target velocity" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration rate" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "Direction": { "type": "INT", "description": "Direction" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "InVelocity": { "type": "BOOL", "description": "Target velocity reached" },
+      "Busy": { "type": "BOOL", "description": "Acceleration in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_TorqueControl": {
+    "category": "Torque",
+    "description": "Torque control mode",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Enable torque control" },
+      "Torque": { "type": "LREAL", "description": "Target torque" },
+      "TorqueRamp": { "type": "LREAL", "description": "Torque ramp rate" },
+      "Velocity": { "type": "LREAL", "description": "Maximum velocity limit" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration limit" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration limit" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "Direction": { "type": "INT", "description": "Direction" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "InTorque": { "type": "BOOL", "description": "Target torque reached" },
+      "Busy": { "type": "BOOL", "description": "Ramping in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_SetPosition": {
+    "category": "Control",
+    "description": "Set actual position reference",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Set position on rising edge" },
+      "Position": { "type": "LREAL", "description": "Position value" },
+      "Mode": { "type": "BOOL", "description": "ABSOLUTE = False (Default), RELATIVE = True" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Position set" },
+      "Busy": { "type": "BOOL", "description": "Setting in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_GearIn": {
+    "category": "Synchronization",
+    "description": "Start electronic gearing",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start gearing on rising edge" },
+      "RatioNumerator": { "type": "LREAL", "description": "Gear ratio numerator" },
+      "RatioDenominator": { "type": "LREAL", "description": "Gear ratio denominator" },
+      "Acceleration": { "type": "LREAL", "description": "Synchronization acceleration" },
+      "Deceleration": { "type": "LREAL", "description": "Synchronization deceleration" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "InGear": { "type": "BOOL", "description": "Gearing active and synchronized" },
+      "Busy": { "type": "BOOL", "description": "Synchronization in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Master": { "type": "AXIS_REF", "description": "Master axis reference" },
+      "Slave": { "type": "AXIS_REF", "description": "Slave axis reference" }
+    }
+  },
+  "MC_GearInPos": {
+    "category": "Synchronization",
+    "description": "Start gearing at specific position",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start gearing on rising edge" },
+      "RatioNumerator": { "type": "LREAL", "description": "Gear ratio numerator" },
+      "RatioDenominator": { "type": "LREAL", "description": "Gear ratio denominator" },
+      "MasterSyncPosition": { "type": "LREAL", "description": "Master synchronization position" },
+      "SlaveSyncPosition": { "type": "LREAL", "description": "Slave synchronization position" },
+      "SyncMode": { "type": "INT", "description": "Sync mode" },
+      "Velocity": { "type": "LREAL", "description": "Maximum velocity" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration rate" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "InGear": { "type": "BOOL", "description": "Gearing active" },
+      "Busy": { "type": "BOOL", "description": "Synchronization in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Master": { "type": "AXIS_REF", "description": "Master axis reference" },
+      "Slave": { "type": "AXIS_REF", "description": "Slave axis reference" }
+    }
+  },
+  "MC_GearOut": {
+    "category": "Synchronization",
+    "description": "Stop electronic gearing",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Stop gearing on rising edge" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Gear out completed" },
+      "Busy": { "type": "BOOL", "description": "Gear out in progress" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Slave": { "type": "AXIS_REF", "description": "Slave axis reference" }
+    }
+  },
+  "MC_CamIn": {
+    "category": "Synchronization",
+    "description": "Start electronic camming",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Start camming on rising edge" },
+      "MasterOffset": { "type": "LREAL", "description": "Master position offset" },
+      "SlaveOffset": { "type": "LREAL", "description": "Slave position offset" },
+      "MasterScaling": { "type": "LREAL", "description": "Master axis scaling" },
+      "SlaveScaling": { "type": "LREAL", "description": "Slave axis scaling" },
+      "StartMode": { "type": "INT", "description": "Start mode" },
+      "Velocity": { "type": "LREAL", "description": "Maximum velocity" },
+      "Acceleration": { "type": "LREAL", "description": "Acceleration rate" },
+      "Deceleration": { "type": "LREAL", "description": "Deceleration rate" },
+      "Jerk": { "type": "LREAL", "description": "Maximum jerk" },
+      "BufferMode": { "type": "INT", "description": "Buffer mode" }
+    },
+    "outputs": {
+      "InSync": { "type": "BOOL", "description": "Cam synchronized" },
+      "Busy": { "type": "BOOL", "description": "Synchronization in progress" },
+      "Active": { "type": "BOOL", "description": "FB is active" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "EndOfProfile": { "type": "BOOL", "description": "Cam table end reached" }
+    },
+    "inout": {
+      "Master": { "type": "AXIS_REF", "description": "Master axis reference" },
+      "Slave": { "type": "AXIS_REF", "description": "Slave axis reference" },
+      "CamTable": { "type": "CAM_REF", "description": "Cam table reference" }
+    }
+  },
+  "MC_CamOut": {
+    "category": "Synchronization",
+    "description": "Stop electronic camming",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Stop camming on rising edge" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Cam out completed" },
+      "Busy": { "type": "BOOL", "description": "Cam out in progress" },
+      "CommandAborted": { "type": "BOOL", "description": "Command was aborted" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Slave": { "type": "AXIS_REF", "description": "Slave axis reference" }
+    }
+  },
+  "MC_ReadActualPosition": {
+    "category": "Status",
+    "description": "Read actual position",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable continuous reading" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Output value is valid" },
+      "Busy": { "type": "BOOL", "description": "Reading in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "Position": { "type": "LREAL", "description": "Actual position" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_ReadActualVelocity": {
+    "category": "Status",
+    "description": "Read actual velocity",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable continuous reading" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Output value is valid" },
+      "Busy": { "type": "BOOL", "description": "Reading in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "Velocity": { "type": "LREAL", "description": "Actual velocity" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_ReadActualTorque": {
+    "category": "Status",
+    "description": "Read actual torque",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable continuous reading" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Output value is valid" },
+      "Busy": { "type": "BOOL", "description": "Reading in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "Torque": { "type": "LREAL", "description": "Actual torque" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_ReadStatus": {
+    "category": "Status",
+    "description": "Read axis status flags",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable continuous reading" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Output values are valid" },
+      "Busy": { "type": "BOOL", "description": "Reading in progress" },
+      "ErrorStop": { "type": "BOOL", "description": "Axis in error stop" },
+      "Disabled": { "type": "BOOL", "description": "Axis disabled" },
+      "Stopping": { "type": "BOOL", "description": "Axis stopping" },
+      "Standstill": { "type": "BOOL", "description": "Axis at standstill" },
+      "DiscreteMotion": { "type": "BOOL", "description": "Discrete motion active" },
+      "ContinuousMotion": { "type": "BOOL", "description": "Continuous motion active" },
+      "SynchronizedMotion": { "type": "BOOL", "description": "Synchronized motion active" },
+      "Homing": { "type": "BOOL", "description": "Axis homing" },
+      "ConstantVelocity": { "type": "BOOL", "description": "Axis is moving with a constant velocity" },
+      "Accelerating": { "type": "BOOL", "description": "Axis is accelerating" },
+      "Decelerating": { "type": "BOOL", "description": "Axis is decelerating" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_ReadAxisError": {
+    "category": "Status",
+    "description": "Read axis error status",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable continuous reading" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Output value is valid" },
+      "Busy": { "type": "BOOL", "description": "Reading in progress" },
+      "Error": { "type": "BOOL", "description": "Axis has error" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "AxisErrorID": { "type": "WORD", "description": "Axis specific error" },
+      "ErrorClass": { "type": "WORD", "description": "" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_ReadParameter": {
+    "category": "Parameters",
+    "description": "Read axis parameter",
+    "inputs": {
+      "Enable": { "type": "BOOL", "description": "Enable parameter read" },
+      "ParameterNumber": { "type": "DINT", "description": "Parameter number" }
+    },
+    "outputs": {
+      "Valid": { "type": "BOOL", "description": "Parameter value is valid" },
+      "Busy": { "type": "BOOL", "description": "Read in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" },
+      "Value": { "type": "LREAL", "description": "Parameter value" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  },
+  "MC_WriteParameter": {
+    "category": "Parameters",
+    "description": "Write axis parameter",
+    "inputs": {
+      "Execute": { "type": "BOOL", "description": "Execute parameter write" },
+      "ParameterNumber": { "type": "DINT", "description": "Parameter number" },
+      "Value": { "type": "LREAL", "description": "Parameter value" }
+    },
+    "outputs": {
+      "Done": { "type": "BOOL", "description": "Write completed" },
+      "Busy": { "type": "BOOL", "description": "Write in progress" },
+      "Error": { "type": "BOOL", "description": "Error occurred" },
+      "ErrorID": { "type": "UINT", "description": "Error code" }
+    },
+    "inout": {
+      "Axis": { "type": "AXIS_REF", "description": "Axis reference" }
+    }
+  }
+}

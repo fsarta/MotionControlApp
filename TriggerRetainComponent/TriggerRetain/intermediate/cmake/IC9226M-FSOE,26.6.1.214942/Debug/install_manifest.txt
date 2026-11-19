@@ -1,0 +1,1 @@
+C:/GIT/TriggerRetain/TriggerRetain/bin/IC9226M-FSOE_26.6.1.214942/Debug/lib/libTriggerRetain.so

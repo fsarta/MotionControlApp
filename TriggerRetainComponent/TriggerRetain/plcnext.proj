@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ProjectSettings xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns="http://www.phoenixcontact.com/schema/cliproject">
+  <Id>96768361-dd24-4222-a07b-ac981a7d4144</Id>
+  <Version>4.0</Version>
+  <Name>TriggerRetain</Name>
+  <Type>acfproject</Type>
+  <GenerateNamespaces>true</GenerateNamespaces>
+  <Target>IC9226M-FSOE,2026.6.1 (26.6.1.214942)</Target>
+</ProjectSettings>

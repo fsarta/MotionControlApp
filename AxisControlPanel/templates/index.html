@@ -1,0 +1,3038 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Motion Control Panel | PLCopen Part 1</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+
+    :root {
+      /* ===== ENTERPRISE COLOUR PALETTES ===== */
+      /* Background and surface */
+      --bg-main: #F3F4F6;
+      --bg-secondary: #F9FAFB;
+      --bg-card: #FFFFFF;
+
+      /* Borders */
+      --border: #E5E7EB;
+      --border-light: #E5E7EB;
+      --border-medium: #D1D5DB;
+      --border-dark: #9CA3AF;
+
+      /* Text */
+      --text-primary: #111827;
+      --text-secondary: #6B7280;
+      --text-muted: #9CA3AF;
+
+      /* Semantic Colors - keeping original names for compatibility */
+      --blue: #2563EB;
+      --blue-bg: #EFF6FF;
+      --green: #10B981;
+      --green-bg: #ECFDF5;
+      --yellow: #F59E0B;
+      --yellow-bg: #FFFBEB;
+      --red: #DC2626;
+      --red-bg: #FEF2F2;
+      --cyan: #06B6D4;
+      --cyan-bg: #ECFEFF;
+      --orange: #F59E0B;
+      --orange-bg: #FFFBEB;
+
+      /* Shadows */
+      --shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px -1px rgba(0, 0, 0, 0.1);
+    }
+
+    [data-theme="dark"] {
+      --bg-main: #0f172a;
+      --bg-secondary: #1e293b;
+      --bg-card: #1e293b;
+      --border: #334155;
+      --border-light: #334155;
+      --border-medium: #475569;
+      --border-dark: #64748b;
+      --text-primary: #f1f5f9;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+      --overlay-bg: rgba(15, 23, 42, 0.85);
+
+      /* Adjusting light backgrounds for dark theme to remain legible */
+      --blue-bg: #1e3a8a;
+      --green-bg: #064e3b;
+      --yellow-bg: #78350f;
+      --red-bg: #7f1d1d;
+      --cyan-bg: #164e63;
+      --orange-bg: #7c2d12;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background: var(--bg-main);
+      color: var(--text-primary);
+      line-height: 1.6;
+      min-height: 100vh;
+      transition: background 0.3s, color 0.3s;
+      font-size: 14px;
+    }
+
+    .container {
+      max-width: 1600px;
+      margin: 0 auto;
+      padding: 24px;
+    }
+
+    /* ===== HEADER ===== */
+    .header {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .header-info h1 {
+      font-size: 20px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .header-subtitle {
+      color: var(--text-secondary);
+      font-size: 14px;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    .status-badge {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-dot.active {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.6;
+      }
+    }
+
+    /* Theme Toggle */
+    .theme-toggle {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
+      transition: all 0.2s;
+    }
+
+    .theme-toggle:hover {
+      background: var(--bg-main);
+      transform: scale(1.05);
+    }
+
+    /* ===== EMERGENCY STOP BUTTON ===== */
+    .emergency-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .emergency-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .emergency-btn {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 35%, #EF4444, #B91C1C);
+      border: 4px solid #991B1B;
+      color: white;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: all 0.15s ease;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      line-height: 1.2;
+      user-select: none;
+    }
+
+    .emergency-btn:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 20px rgba(220, 38, 38, 0.6), inset 0 -2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .emergency-btn:active {
+      transform: scale(0.95);
+      box-shadow: 0 2px 6px rgba(220, 38, 38, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    /* ===== PROJECT SWITCH TOGGLE ===== */
+    .project-switch-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .project-switch-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .project-switch-toggle {
+      position: relative;
+      width: 140px;
+      height: 50px;
+      background: #475569;
+      border-radius: 25px;
+      cursor: pointer;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      border: 2px solid var(--border);
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .project-switch-toggle.active {
+      background: linear-gradient(135deg, #2563EB, #06B6D4);
+      border-color: #2563EB;
+      box-shadow: 0 0 20px rgba(37, 99, 235, 0.4), inset 0 2px 4px rgba(0, 0, 0, 0.2);
+    }
+
+    .project-switch-toggle.switching {
+      background: linear-gradient(135deg, #F59E0B, #D97706);
+      border-color: #F59E0B;
+      box-shadow: 0 0 20px rgba(245, 158, 11, 0.4);
+      cursor: not-allowed;
+      animation: pulse 1.5s infinite;
+    }
+
+    .project-switch-toggle::before {
+      content: 'USER';
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 12px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, 0.5);
+      transition: all 0.3s;
+      letter-spacing: 0.05em;
+    }
+
+    .project-switch-toggle.active::before {
+      content: 'APP';
+      color: white;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .project-switch-toggle.switching::before {
+      content: '...';
+      color: white;
+      font-size: 18px;
+      letter-spacing: 4px;
+    }
+
+    .project-switch-slider {
+      position: absolute;
+      top: 4px;
+      left: 4px;
+      width: 40px;
+      height: 40px;
+      background: white;
+      border-radius: 50%;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .project-switch-toggle.active .project-switch-slider {
+      left: calc(100% - 44px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .project-switch-toggle.switching .project-switch-slider {
+      left: calc(50% - 20px);
+      animation: switchPulse 1.5s ease-in-out infinite;
+    }
+
+    @keyframes switchPulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+
+      50% {
+        transform: scale(0.9);
+        opacity: 0.7;
+      }
+    }
+
+    .project-switch-status {
+      font-size: 10px;
+      color: var(--text-muted);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .project-switch-toggle.active+.project-switch-status {
+      color: var(--blue);
+      font-weight: 700;
+    }
+
+    .project-switch-toggle.switching+.project-switch-status {
+      color: var(--yellow);
+      font-weight: 700;
+    }
+
+    /* ===== SWITCHING OVERLAY MODAL ===== */
+    .switching-overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      z-index: 9999;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .switching-overlay.active {
+      display: flex;
+    }
+
+    .switching-modal {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      padding: 48px 56px;
+      text-align: center;
+      box-shadow: 0 24px 48px rgba(0, 0, 0, 0.3);
+      max-width: 420px;
+      width: 90%;
+    }
+
+    .switching-spinner {
+      width: 56px;
+      height: 56px;
+      border: 4px solid var(--border);
+      border-top-color: var(--blue);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+      margin: 0 auto 24px;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .switching-title {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 12px;
+    }
+
+    .switching-message {
+      font-size: 14px;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    .switching-dots {
+      display: inline-block;
+      width: 24px;
+      text-align: left;
+    }
+
+    .switching-dots::after {
+      content: '';
+      animation: dots 1.5s steps(4, end) infinite;
+    }
+
+    @keyframes dots {
+      0% {
+        content: '';
+      }
+
+      25% {
+        content: '.';
+      }
+
+      50% {
+        content: '..';
+      }
+
+      75% {
+        content: '...';
+      }
+    }
+
+    /* ===== MAIN GRID ===== */
+    .main-grid {
+      display: grid;
+      grid-template-columns: minmax(420px, 500px) 1fr;
+      gap: 20px;
+      align-items: start;
+      margin-bottom: 20px;
+    }
+
+    /* ===== CARDS ===== */
+    .card {
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: var(--shadow);
+      animation: fadeIn 0.3s ease;
+    }
+
+    .card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 20px;
+    }
+
+    .card-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .card-subtitle {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 16px;
+    }
+
+    /* Control Panel */
+    .control-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* ===== FORM ELEMENTS ===== */
+    label {
+      display: block;
+      font-size: 14px;
+      font-weight: 500;
+      color: var(--text-secondary);
+      margin-bottom: 8px;
+      letter-spacing: -0.01em;
+    }
+
+    input[type='text'],
+    input[type='number'],
+    select {
+      width: 100%;
+      padding: 10px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border-medium);
+      border-radius: 8px;
+      color: var(--text-primary);
+      font-size: 14px;
+      font-family: 'Inter', sans-serif;
+      transition: all 0.2s;
+    }
+
+    input:focus,
+    select:focus {
+      outline: none;
+      border-color: var(--blue);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+
+    input:disabled,
+    select:disabled {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+      cursor: not-allowed;
+    }
+
+    input[readonly] {
+      background: var(--bg-secondary);
+      color: var(--text-secondary);
+      border-color: var(--border-light);
+    }
+
+    /* Category separator in select */
+    optgroup {
+      font-weight: 600;
+      font-style: normal;
+      color: var(--blue);
+      padding: 8px;
+    }
+
+    option {
+      padding: 8px;
+    }
+
+    /* ===== BUTTONS ===== */
+    .btn {
+      padding: 10px 20px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      font-family: 'Inter', sans-serif;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      justify-content: center;
+      background: var(--bg-card);
+      color: var(--text-primary);
+      letter-spacing: -0.01em;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-primary {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: #1D4ED8;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 8px rgba(37, 99, 235, 0.2);
+    }
+
+    .btn-secondary {
+      background: var(--bg-secondary);
+      color: var(--text-primary);
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      background: var(--bg-main);
+      border-color: var(--border-dark);
+    }
+
+    .btn-success {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+    }
+
+    .btn-success:hover:not(:disabled) {
+      background: #059669;
+      box-shadow: 0 4px 8px rgba(16, 185, 129, 0.2);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    /* ===== STATUS BADGES INLINE ===== */
+    .status-badges {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .status-badge-inline {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      transition: all 0.2s;
+    }
+
+    .status-badge-inline .dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--text-muted);
+    }
+
+    .status-badge-inline.active {
+      background: var(--green-bg);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .status-badge-inline.active .dot {
+      background: var(--green);
+      box-shadow: 0 0 6px var(--green);
+    }
+
+    .status-badge-inline.error-state {
+      background: var(--red-bg);
+      border-color: var(--red);
+      color: var(--red);
+    }
+
+    .status-badge-inline.error-state .dot {
+      background: var(--red);
+    }
+
+    .status-badge-inline.warning-state {
+      background: var(--yellow-bg);
+      border-color: var(--yellow);
+      color: #92400e;
+    }
+
+    .status-badge-inline.warning-state .dot {
+      background: var(--yellow);
+    }
+
+    /* ===== CONTROL PANEL BUTTONS ===== */
+    .control-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn-execute {
+      background: var(--green);
+      color: white;
+      border-color: var(--green);
+      font-size: 15px;
+    }
+
+    .btn-execute:hover:not(:disabled) {
+      background: #059669;
+      box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+    }
+
+    .btn-enable {
+      background: var(--blue);
+      color: white;
+      border-color: var(--blue);
+    }
+
+    .btn-enable:hover:not(:disabled) {
+      background: #1D4ED8;
+      box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+    }
+
+    .btn-emergency {
+      background: var(--red);
+      color: white;
+      border-color: var(--red);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    .btn-emergency:hover:not(:disabled) {
+      background: #B91C1C;
+      box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+    }
+
+    /* ===== LOGS SECTION FULL WIDTH ===== */
+    .logs-section {
+      grid-column: 1 / -1;
+      margin-top: 4px;
+    }
+
+    /* ===== STATUS INDICATORS (Pills/Badges) ===== */
+    .status-indicators {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 20px;
+    }
+
+    .status-indicator {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .indicator-label {
+      font-size: 12px;
+      color: var(--text-secondary);
+      font-weight: 500;
+    }
+
+    .indicator-value {
+      font-size: 13px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 6px;
+    }
+
+    .indicator-value.true {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .indicator-value.false {
+      background: var(--bg-card);
+      color: var(--text-muted);
+    }
+
+    .indicator-value.warning {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .indicator-value.error {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    /* ===== CURRENT VALUES (List Items con barra laterale) ===== */
+    .current-values {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .value-box {
+      background: var(--bg-secondary);
+      border-radius: 8px;
+      padding: 18px 18px 18px 22px;
+      border-left: 4px solid var(--border);
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+      position: relative;
+    }
+
+    .value-box.position {
+      border-left-color: var(--blue);
+      background: var(--blue-bg);
+    }
+
+    .value-box.velocity {
+      border-left-color: var(--green);
+      background: var(--green-bg);
+    }
+
+    .value-box.torque {
+      border-left-color: var(--cyan);
+      background: var(--cyan-bg);
+    }
+
+    .value-box.lag {
+      border-left-color: var(--orange);
+      background: var(--orange-bg);
+    }
+
+    .value-label {
+      font-size: 13px;
+      color: var(--text-secondary);
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    .value-display {
+      font-size: 24px;
+      font-weight: 700;
+      color: var(--text-primary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .value-unit {
+      font-size: 13px;
+      color: var(--text-muted);
+      font-weight: 400;
+      margin-left: 4px;
+    }
+
+    /* ===== IO COLUMNS (horizontal layout) ===== */
+    .io-columns {
+      display: flex;
+      flex-direction: row;
+      gap: 20px;
+      align-items: flex-start;
+    }
+
+    .io-columns>.card {
+      flex: 1;
+      min-width: 0;
+    }
+
+    /* ===== IO SECTIONS ===== */
+    .io-section {
+      margin-bottom: 20px;
+    }
+
+    .io-section-title {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+
+    .io-row {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      padding: 12px;
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      margin-bottom: 8px;
+      align-items: center;
+    }
+
+    .io-info {
+      flex: 1;
+    }
+
+    .io-name {
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text-primary);
+      margin-bottom: 2px;
+    }
+
+    .io-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    .io-control input[type='checkbox'] {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+      accent-color: var(--blue);
+    }
+
+    .io-control input[type='number'],
+    .io-control input[type='text'] {
+      width: 120px;
+      padding: 8px 10px;
+      font-size: 13px;
+    }
+
+    .io-value {
+      padding: 6px 12px;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Monaco', 'Courier New', monospace;
+      font-size: 13px;
+      color: var(--text-primary);
+      min-width: 80px;
+      text-align: right;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .io-value.error {
+      background: var(--red-bg);
+      border-color: var(--red);
+      color: var(--red);
+      font-weight: 600;
+    }
+
+    /* ===== LED INDICATORS ===== */
+    .led-indicator {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      min-width: 90px;
+      justify-content: center;
+    }
+
+    .led-dot {
+      width: 12px;
+      height: 12px;
+      border-radius: 50%;
+      transition: all 0.3s;
+      box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+    }
+
+    .led-indicator.off {
+      background: var(--bg-secondary);
+      color: var(--text-muted);
+    }
+
+    .led-indicator.off .led-dot {
+      background: #6c757d;
+    }
+
+    .led-indicator.done {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .led-indicator.done .led-dot {
+      background: var(--green);
+      box-shadow: 0 0 8px var(--green);
+      animation: pulse 2s infinite;
+    }
+
+    .led-indicator.error {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .led-indicator.error .led-dot {
+      background: var(--red);
+      box-shadow: 0 0 8px var(--red);
+      animation: pulse 2s infinite;
+    }
+
+    .led-indicator.busy {
+      background: var(--yellow-bg);
+      color: var(--yellow);
+    }
+
+    .led-indicator.busy .led-dot {
+      background: var(--yellow);
+      box-shadow: 0 0 8px var(--yellow);
+      animation: pulse 1s infinite;
+    }
+
+    .led-indicator.active {
+      background: var(--cyan-bg);
+      color: var(--cyan);
+    }
+
+    .led-indicator.active .led-dot {
+      background: var(--cyan);
+      box-shadow: 0 0 8px var(--cyan);
+    }
+
+    .led-indicator.velocity {
+      background: var(--blue-bg);
+      color: var(--blue);
+    }
+
+    .led-indicator.velocity .led-dot {
+      background: var(--blue);
+      box-shadow: 0 0 8px var(--blue);
+    }
+
+    .led-indicator.aborted {
+      background: var(--orange-bg);
+      color: var(--orange);
+    }
+
+    .led-indicator.aborted .led-dot {
+      background: var(--orange);
+      box-shadow: 0 0 8px var(--orange);
+      animation: pulse 2s infinite;
+    }
+
+    /* ===== ERROR DISPLAY ===== */
+    .error-display {
+      background: var(--yellow-bg);
+      border: 2px solid #FDE68A;
+      border-radius: 8px;
+      padding: 16px;
+      margin-top: 16px;
+      display: none;
+    }
+
+    .error-display.active {
+      display: block;
+    }
+
+    .error-title {
+      font-weight: 700;
+      color: #92400E;
+      margin-bottom: 8px;
+      font-size: 14px;
+    }
+
+    .error-code {
+      font-weight: 600;
+      color: #92400E;
+      margin-bottom: 8px;
+      font-family: 'Monaco', monospace;
+    }
+
+    .error-desc {
+      font-size: 13px;
+      color: var(--text-primary);
+      line-height: 1.5;
+    }
+
+    /* ===== LOGS SECTION ===== */
+    .logs-section {
+      width: 100%;
+    }
+
+    .log-controls {
+      display: flex;
+      gap: 12px;
+      align-items: center;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+
+    .log-controls label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+    }
+
+    .log-controls input[type='checkbox'] {
+      width: 16px;
+      height: 16px;
+      accent-color: var(--blue);
+    }
+
+    .log-controls input[type='number'] {
+      width: 80px;
+      padding: 6px 8px;
+    }
+
+    .log-table-container {
+      background: var(--bg-secondary);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .log-table {
+      width: 100%;
+      overflow-x: auto;
+      max-height: 400px;
+      overflow-y: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    th {
+      background: var(--bg-card);
+      padding: 12px;
+      text-align: left;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      border-bottom: 1px solid var(--border);
+    }
+
+    td {
+      padding: 12px;
+      font-size: 13px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    tr:last-child td {
+      border-bottom: none;
+    }
+
+    tr:hover {
+      background: var(--bg-main);
+    }
+
+    .log-event {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+    }
+
+    .log-event.execute {
+      background: var(--blue-bg);
+      color: var(--blue);
+    }
+
+    .log-event.done {
+      background: var(--green-bg);
+      color: var(--green);
+    }
+
+    .log-event.error {
+      background: var(--red-bg);
+      color: var(--red);
+    }
+
+    .log-event.emergency {
+      background: var(--red);
+      color: white;
+    }
+
+    /* ===== STATUS MESSAGE ===== */
+    .status-message {
+      padding: 12px;
+      border-radius: 8px;
+      margin-top: 12px;
+      font-size: 13px;
+      display: none;
+    }
+
+    .status-message.success {
+      background: var(--green-bg);
+      border: 1px solid var(--green);
+      color: var(--green);
+      display: block;
+    }
+
+    .status-message.error {
+      background: var(--red-bg);
+      border: 1px solid var(--red);
+      color: var(--red);
+      display: block;
+    }
+
+    .status-message.warning {
+      background: var(--yellow-bg);
+      border: 1px solid var(--yellow);
+      color: #92400E;
+      display: block;
+    }
+
+    /* ===== RESPONSIVE ===== */
+    @media (max-width: 1024px) {
+      .main-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .io-columns {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .status-indicators,
+      .current-values {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* ===== ANIMATIONS ===== */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(10px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* ===== SCROLLBAR ===== */
+    ::-webkit-scrollbar {
+      width: 8px;
+      height: 8px;
+    }
+
+    ::-webkit-scrollbar-track {
+      background: var(--bg-secondary);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb {
+      background: var(--border-medium);
+      border-radius: 4px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: var(--border-dark);
+    }
+
+    /* ===== APP OVERLAY ===== */
+    .app-not-active-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: var(--overlay-bg, rgba(243, 244, 246, 0.85));
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      border-radius: 10px;
+    }
+
+    .app-not-active-card {
+      background: var(--bg-card);
+      padding: 30px 40px;
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      text-align: center;
+      border: 1px solid var(--border);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-top">
+        <div class="header-info">
+          <h1>Motion Control Panel</h1>
+          <p class="header-subtitle">PLCopen Part 1 - Unified Interface</p>
+        </div>
+        <div class="header-actions">
+          <button class="theme-toggle" onclick="toggleTheme()" id="themeToggle" title="Toggle theme">
+            🌙
+          </button>
+          <div class="status-badge">
+            <span class="status-dot" id="healthDot"></span>
+            <span id="healthText">Checking...</span>
+          </div>
+          <div class="project-switch-container">
+            <div class="project-switch-label">Project Control</div>
+            <div class="project-switch-toggle" id="projectSwitchToggle" onclick="toggleProjectSwitch()">
+              <div class="project-switch-slider"></div>
+            </div>
+            <div class="project-switch-status" id="projectSwitchStatus">User Project</div>
+          </div>
+          <div class="emergency-container">
+            <div class="emergency-label">Emergency Stop</div>
+            <button class="emergency-btn" id="emergencyBtn" onclick="triggerEmergencyStop()">
+              STOP
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="position: relative;" id="appContentWrapper">
+      <!-- App Not Active Overlay -->
+      <div id="appNotActiveOverlay" class="app-not-active-overlay" style="display: none;">
+        <div class="app-not-active-card">
+          <div style="font-size: 40px; margin-bottom: 15px;">🔒</div>
+          <h2 style="margin-bottom: 10px; color: var(--text-primary);">App Project Required</h2>
+          <p style="color: var(--text-secondary); max-width: 320px; line-height: 1.5;">
+            Please switch to the <strong>App Project</strong> using the toggle in the header to view and control the
+            axis parameters.
+          </p>
+        </div>
+      </div>
+
+      <!-- Main Grid -->
+      <div class="main-grid">
+        <!-- LEFT COLUMN -->
+        <div class="control-panel">
+
+          <!-- Configuration Card -->
+          <div class="card">
+            <div class="card-subtitle">Configuration</div>
+
+            <div style="margin-bottom: 16px;">
+              <label for="axisDropdown">Axis Selection</label>
+              <select id="axisDropdown">
+                <option value="" disabled selected>Loading axes...</option>
+              </select>
+            </div>
+
+            <div>
+              <label for="structVar">Axis Control Variable</label>
+              <input id="structVar" type="text" placeholder="Arp.Plc.Eclr/Main1.AxisController" readonly>
+            </div>
+          </div>
+
+          <!-- Control Panel Card -->
+          <div class="card">
+            <div class="card-subtitle">Control Panel</div>
+
+            <div style="margin-bottom: 16px;">
+              <label for="fbSelect">Function Block</label>
+              <select id="fbSelect">
+                <option value="">-- Select Function Block --</option>
+              </select>
+            </div>
+
+            <!-- Execute Button -->
+            <button class="btn btn-execute" style="width: 100%; margin-bottom: 20px;" onclick="executeFB()"
+              title="Execute the selected function block">
+              ▶ Execute
+            </button>
+
+            <!-- Current Values -->
+            <div class="current-values" id="valuesCard">
+              <div class="value-box position">
+                <div class="value-label">Actual Position</div>
+                <div class="value-display">
+                  <span id="actualPosition">--</span>
+                  <span class="value-unit">UU</span>
+                </div>
+              </div>
+              <div class="value-box velocity">
+                <div class="value-label">Actual Velocity</div>
+                <div class="value-display">
+                  <span id="actualVelocity">--</span>
+                  <span class="value-unit">UU/s</span>
+                </div>
+              </div>
+              <div class="value-box torque">
+                <div class="value-label">Actual Torque</div>
+                <div class="value-display">
+                  <span id="actualTorque">--</span>
+                  <span class="value-unit">%</span>
+                </div>
+              </div>
+              <div class="value-box lag">
+                <div class="value-label">Following Error</div>
+                <div class="value-display">
+                  <span id="followingError">--</span>
+                  <span class="value-unit">UU</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- Status Badges Inline -->
+            <div class="status-badges" id="statusBadges" style="display: none; margin-top: 16px;">
+              <!-- Populated dynamically by JavaScript -->
+            </div>
+
+            <!-- Status Message -->
+            <div id="statusMsg" class="status-message" style="margin-top: 12px;"></div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN -->
+        <div class="io-columns">
+
+          <!-- Inputs Card -->
+          <div class="card" id="inputsCard" style="display: none;">
+            <div class="card-title" style="margin-bottom: 16px;">Inputs</div>
+            <div class="io-section">
+              <div id="inputsList"></div>
+            </div>
+
+            <div
+              style="display: flex; align-items: center; gap: 12px; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--border);">
+              <label style="margin: 0; flex: 1; display: flex; align-items: center; gap: 8px;">
+                <input type="checkbox" id="autoRead" checked>
+                <span style="font-size: 13px;">Auto Read</span>
+              </label>
+              <input type="number" id="readInterval" value="0.1" min="0.01" max="10" step="0.01"
+                style="width: 70px; padding: 6px; font-size: 13px;" title="Update interval in seconds">
+              <span style="font-size: 12px; color: var(--text-secondary);">sec</span>
+            </div>
+          </div>
+
+          <!-- Outputs Card -->
+          <div class="card" id="outputsCard" style="display: none;">
+            <div class="card-title" style="margin-bottom: 16px;">Outputs</div>
+            <div class="io-section">
+              <div id="outputsList"></div>
+            </div>
+
+            <!-- Error Display -->
+            <div id="errorDisplay" class="error-display">
+              <div class="error-title">⚠ Error Detected</div>
+              <div class="error-code" id="errorCode"></div>
+              <div class="error-desc" id="errorDesc"></div>
+            </div>
+          </div>
+
+          <!-- Legacy Status Indicators Card (hidden, kept for compatibility) -->
+          <div class="card" id="statusCard" style="display: none;">
+            <div class="card-subtitle">Status Indicators (Legacy)</div>
+            <div class="status-indicators" id="statusIndicators"></div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- MOTION LOGS - Full Width -->
+      <div class="logs-section">
+        <div class="card">
+          <div class="card-header">
+            <div class="card-title">Motion Logs</div>
+            <div class="btn-group">
+              <button class="btn btn-secondary" onclick="fetchLogs()">↻ Refresh</button>
+              <button class="btn btn-secondary" onclick="clearLogs()">✕ Clear</button>
+            </div>
+          </div>
+
+          <div class="log-controls">
+            <label>
+              <input type="number" id="logLimit" value="100" min="10" max="1000">
+              Limit
+            </label>
+            <label>
+              <input type="checkbox" id="autoLogs">
+              Auto Refresh
+            </label>
+            <input type="number" id="logInterval" value="3" min="1" style="width: 60px; padding: 6px;">
+            <span style="font-size: 13px; color: var(--text-secondary);">sec</span>
+          </div>
+
+          <div class="log-table-container">
+            <div class="log-table">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Time</th>
+                    <th>Axis</th>
+                    <th>Function Block</th>
+                    <th>Event</th>
+                    <th>Parameters</th>
+                  </tr>
+                </thead>
+                <tbody id="logBody">
+                  <tr>
+                    <td colspan="5" style="text-align: center; color: var(--text-muted);">No logs yet</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Switching Overlay Modal -->
+      <div class="switching-overlay" id="switchingOverlay">
+        <div class="switching-modal">
+          <div class="switching-spinner"></div>
+          <div class="switching-title" id="switchingTitle">Switching Project</div>
+          <div class="switching-message">
+            PLC is restarting<span class="switching-dots"></span><br>
+            <span style="font-size: 12px; color: var(--text-muted); margin-top: 8px; display: inline-block;">
+              This may take 15–30 seconds. Do not close the page.
+            </span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    const $ = (id) => document.getElementById(id);
+
+    // --- PLC VARIABLE CONFIGURATION ---
+    // 1. The variable used by the HMI to send commands (Power, Home, Move...)
+    //    This NEVER CHANGES, because the PLC maps the chosen axis inside it.
+    const HMI_CONTROL_VAR = "Arp.Plc.Eclr/Main1.AxisController";
+
+    // 2. The Pointer variable in the PLC where we write the name of the axis to control
+    const PLC_POINTER_VAR = "Arp.Plc.Eclr/AXIS_CONTROLLER";
+    // ------------------------------------
+
+    function logStatus(msg, color) {
+      const el = document.getElementById('scanStatus');
+      if (el) {
+        el.innerText = msg;
+        el.style.color = color || 'gray';
+      }
+      console.log("[AXIS LOG]: " + msg);
+    }
+
+    const state = {
+      fbDef: null,
+      currentFBName: null,  // Track current FB name for cache consistency
+      needsInputSync: false,  // Flag: sync inputs from PLC only on first read after FB change
+      readTimer: null,
+      logTimer: null,
+      readInFlight: false,
+      logInFlight: false,
+      emergencyStopActive: false,
+      axisStructPath: HMI_CONTROL_VAR,
+      currentAxis: null,  // Track current axis
+      projectState: 'user_project',  // Track project switch state
+      projectPollTimer: null  // Timer for polling project status
+    };
+
+    // ==================== AXIS STATE CACHE SYSTEM ====================
+    // Maintains independent state for each axis - ZERO IMPACT ON PLC
+    // Everything is handled on the client side in memory, with localStorage used for data persistence
+
+    const axisStateCache = {};  // In-memory cache: { 'axisName': { fbName, inputs, outputs, timestamp } }
+
+    // Load cache from localStorage on startup
+    function loadAxisCacheFromStorage() {
+      try {
+        const stored = localStorage.getItem('axisStateCache');
+        if (stored) {
+          const parsed = JSON.parse(stored);
+          Object.assign(axisStateCache, parsed);
+          console.log('✓ Axis cache loaded from storage:', Object.keys(axisStateCache).length, 'axes');
+        }
+      } catch (e) {
+        console.warn('Failed to load axis cache:', e);
+      }
+    }
+
+    // Save cache to localStorage
+    function saveAxisCacheToStorage() {
+      try {
+        localStorage.setItem('axisStateCache', JSON.stringify(axisStateCache));
+      } catch (e) {
+        console.warn('Failed to save axis cache:', e);
+      }
+    }
+
+    // Save current state for an axis
+    function saveCurrentAxisState(axisName) {
+      if (!axisName) return;
+
+      // Use tracked FB name from state, NOT the dropdown (which may already show the new selection)
+      const fbName = state.currentFBName;
+      if (!fbName) return;
+
+      const inputs = collectInputs();
+
+      // Save in cache
+      axisStateCache[axisName] = {
+        fbName: fbName,
+        inputs: inputs,
+        timestamp: Date.now(),
+        lastOutputs: {} // Può essere popolato quando si leggono gli output
+      };
+
+      console.log(`💾 Saved state for axis: ${axisName}`, axisStateCache[axisName]);
+
+      // Persisti su localStorage
+      saveAxisCacheToStorage();
+    }
+
+    // Load saved state for an axis
+    // Restore input values from cached data
+    function restoreInputValues(inputs) {
+      if (!inputs) return;
+
+      Object.keys(inputs).forEach((name) => {
+        const el = $(`input-${name}`);
+        if (!el) return;
+
+        const value = inputs[name];
+        if (el.type === 'checkbox') {
+          el.checked = Boolean(value);
+        } else {
+          el.value = value;
+        }
+      });
+
+      console.log('✓ Input values restored from cache');
+    }
+
+    // Cleans cache for axes that no longer exist (optional, for maintenance)
+    function cleanupAxisCache(validAxisNames) {
+      const cachedAxes = Object.keys(axisStateCache);
+      let cleaned = 0;
+
+      cachedAxes.forEach(axisName => {
+        if (!validAxisNames.includes(axisName)) {
+          delete axisStateCache[axisName];
+          cleaned++;
+        }
+      });
+
+      if (cleaned > 0) {
+        console.log(`🧹 Cleaned ${cleaned} stale axis entries from cache`);
+        saveAxisCacheToStorage();
+      }
+    }
+
+    // ==================== END AXIS STATE CACHE SYSTEM ====================
+
+
+    // Theme management
+    function toggleTheme() {
+      const currentTheme = document.body.getAttribute('data-theme');
+      const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', newTheme);
+      $('themeToggle').textContent = newTheme === 'dark' ? '☀️' : '🌙';
+      localStorage.setItem('theme', newTheme);
+    }
+
+    function loadTheme() {
+      const savedTheme = localStorage.getItem('theme') || 'light';
+      document.body.setAttribute('data-theme', savedTheme);
+      $('themeToggle').textContent = savedTheme === 'dark' ? '☀️' : '🌙';
+    }
+
+    // Emergency Stop Button (Toggle: first click activates MC_Stop, second click deactivates)
+    async function triggerEmergencyStop() {
+      const structVar = $('structVar').value.trim();
+
+      if (!structVar) {
+        showStatus('Please configure Axis Variable first', 'warning');
+        return;
+      }
+
+      const btn = $('emergencyBtn');
+      btn.disabled = true;
+
+      const axisDropdown = $('axisDropdown');
+      const axisName = axisDropdown ? axisDropdown.value : '';
+
+      try {
+        if (state.emergencyStopActive) {
+          // === DEACTIVATE: Send MC_Stop.Execute = FALSE ===
+          const res = await fetch('/api/plcopen/execute_fb', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              struct_variable: structVar,
+              function_block: 'MC_Stop',
+              axis_name: axisName,
+              inputs: { Execute: false }
+            })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            state.emergencyStopActive = false;
+            updateEmergencyBtnVisual();
+            showStatus('✓ Emergency Stop deactivated', 'success');
+            setTimeout(fetchLogs, 200);
+          } else {
+            showStatus('Emergency stop deactivation failed: ' + data.error, 'error');
+          }
+        } else {
+          // === ACTIVATE: Send MC_Stop with deceleration parameters ===
+          let deceleration = state.emergencyDecel || 50000;
+          let jerk = state.emergencyJerk || 0;
+
+          // Try to read current MC_Stop.Deceleration from PLC for a safe ramp
+          try {
+            const readRes = await fetch('/api/plcopen/read_fb', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                struct_variable: structVar,
+                function_block: 'MC_Stop',
+                axis_name: axisName
+              })
+            });
+            const readData = await readRes.json();
+            if (readData.success && readData.state.inputs) {
+              const plcDecel = readData.state.inputs.Deceleration;
+              const plcJerk = readData.state.inputs.Jerk;
+              if (plcDecel && plcDecel > 0) {
+                deceleration = plcDecel;
+                console.log(`✓ Using PLC MC_Stop.Deceleration: ${deceleration}`);
+              }
+              if (plcJerk !== null && plcJerk !== undefined) {
+                jerk = plcJerk;
+              }
+            }
+          } catch (readErr) {
+            console.warn('Could not read MC_Stop defaults, using fallback:', readErr);
+          }
+
+          const res = await fetch('/api/plcopen/emergency_stop', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              struct_variable: structVar,
+              axis_name: axisName,
+              deceleration: deceleration,
+              jerk: jerk
+            })
+          });
+
+          const data = await res.json();
+
+          if (data.success) {
+            state.emergencyStopActive = true;
+            updateEmergencyBtnVisual();
+            showStatus(`⚠ EMERGENCY STOP ACTIVATED (decel: ${deceleration})`, 'error');
+            setTimeout(fetchLogs, 200);
+          } else {
+            showStatus('Emergency stop failed: ' + data.error, 'error');
+          }
+        }
+      } catch (err) {
+        showStatus('Emergency stop error: ' + err.message, 'error');
+      } finally {
+        btn.disabled = false;
+      }
+    }
+
+    // Update emergency button visual based on toggle state
+    function updateEmergencyBtnVisual() {
+      const btn = $('emergencyBtn');
+      if (state.emergencyStopActive) {
+        btn.textContent = 'RESET';
+        btn.style.background = 'radial-gradient(circle at 35% 35%, #F59E0B, #D97706)';
+        btn.style.borderColor = '#B45309';
+        btn.style.boxShadow = '0 4px 12px rgba(245, 158, 11, 0.5), inset 0 -2px 4px rgba(0, 0, 0, 0.2)';
+      } else {
+        btn.textContent = 'STOP';
+        btn.style.background = '';
+        btn.style.borderColor = '';
+        btn.style.boxShadow = '';
+      }
+    }
+
+    // Health check
+    async function checkHealth() {
+      try {
+        const res = await fetch('/api/health');
+        const data = await res.json();
+        const dot = $('healthDot');
+        const text = $('healthText');
+
+        if (data.status === 'ok') {
+          dot.classList.add('active');
+          text.textContent = 'Connected';
+        } else {
+          dot.classList.remove('active');
+          text.textContent = 'Initializing...';
+        }
+      } catch (err) {
+        $('healthDot').classList.remove('active');
+        $('healthText').textContent = 'Connection Error';
+      }
+    }
+
+    // Load function blocks with categories
+    async function loadFunctionBlocks() {
+      try {
+        const res = await fetch('/api/plcopen/function_blocks');
+        const data = await res.json();
+
+        if (data.success) {
+          const select = $('fbSelect');
+          select.innerHTML = '<option value="">Select Function Block...</option>';
+
+          // Group by category
+          const grouped = {};
+          Object.keys(data.function_blocks).forEach((fb) => {
+            const category = data.function_blocks[fb].category || 'Other';
+            if (!grouped[category]) {
+              grouped[category] = [];
+            }
+            grouped[category].push(fb);
+          });
+
+          // Add optgroups for each category
+          const categoryOrder = ['Control', 'Homing', 'Positioning', 'Velocity', 'Torque', 'Synchronization', 'Status', 'Parameters'];
+          categoryOrder.forEach((category) => {
+            if (grouped[category]) {
+              const optgroup = document.createElement('optgroup');
+              optgroup.label = category;
+              grouped[category].sort().forEach((fb) => {
+                const option = document.createElement('option');
+                option.value = fb;
+                option.textContent = fb;
+                optgroup.appendChild(option);
+              });
+              select.appendChild(optgroup);
+            }
+          });
+        }
+      } catch (err) {
+        showStatus('Failed to load function blocks', 'error');
+      }
+    }
+
+    // Auto-load function block when selected
+    async function loadDefinition() {
+      const structVar = $('structVar').value.trim();
+      const fbName = $('fbSelect').value;
+
+      if (!structVar || !fbName) {
+        if (!structVar) showStatus('Please provide Axis Variable', 'warning');
+        return;
+      }
+
+      // ========== SAVE STATE BEFORE CHANGING FB ==========
+      if (state.currentAxis && state.fbDef) {
+        saveCurrentAxisState(state.currentAxis);
+        console.log(`💾 💾 State saved before changing FB for axis: ${state.currentAxis}`);
+      }
+      // ======================================================
+
+      state.axisStructPath = structVar;
+
+      try {
+        const res = await fetch('/api/plcopen/function_blocks');
+        const data = await res.json();
+
+        if (!data.success || !data.function_blocks[fbName]) {
+          showStatus('Function block not found', 'error');
+          return;
+        }
+
+        state.fbDef = data.function_blocks[fbName];
+        state.currentFBName = fbName;  // Track current FB name for cache consistency
+        state.needsInputSync = true;   // Sync inputs from PLC on next read
+        renderInputs(state.fbDef.inputs || {});
+        renderOutputs(state.fbDef.outputs || {});
+
+        $('inputsCard').style.display = 'block';
+        $('outputsCard').style.display = 'block';
+        // valuesCard is now always visible in Control Panel
+
+        showStatus(`${fbName} loaded successfully`, 'success');
+
+        // Start auto-read if enabled
+        if ($('autoRead').checked) {
+          updateAutoRead();
+        }
+
+        // Initial read
+        setTimeout(() => {
+          readFB();
+          readAxisValues();
+        }, 500);
+      } catch (err) {
+        showStatus('Error loading definition: ' + err.message, 'error');
+      }
+    }
+
+    // Read axis current values (ActualPosition, ActualVelocity, ActualTorque, PositionLag)
+    // Now reads from AxisController using the selected axis reference
+    async function readAxisValues() {
+      const axisDropdown = document.getElementById('axisDropdown');
+      if (!axisDropdown || !axisDropdown.value) {
+        console.log('No axis selected');
+        return;
+      }
+
+      const selectedAxis = axisDropdown.value;
+
+      try {
+        const res = await fetch('/api/v1/read/axis_controller_values', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ axis_name: selectedAxis })
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.success && data.values) {
+            const values = data.values;
+
+            // Update position
+            const posEl = $('actualPosition');
+            if (posEl) {
+              if (values.position !== null && values.position !== undefined) {
+                posEl.textContent = typeof values.position === 'number' ? values.position.toFixed(2) : values.position;
+              } else {
+                posEl.textContent = '0.00';
+              }
+            }
+
+            // Update velocity
+            const velEl = $('actualVelocity');
+            if (velEl) {
+              if (values.velocity !== null && values.velocity !== undefined) {
+                velEl.textContent = typeof values.velocity === 'number' ? values.velocity.toFixed(2) : values.velocity;
+              } else {
+                velEl.textContent = '0.00';
+              }
+            }
+
+            // Update torque
+            const torqueEl = $('actualTorque');
+            if (torqueEl) {
+              if (values.torque !== null && values.torque !== undefined) {
+                torqueEl.textContent = typeof values.torque === 'number' ? values.torque.toFixed(2) : values.torque;
+              } else {
+                torqueEl.textContent = '0.00';
+              }
+            }
+
+            // Update following error
+            const errEl = $('followingError');
+            if (errEl) {
+              if (values.following_error !== null && values.following_error !== undefined) {
+                errEl.textContent = typeof values.following_error === 'number' ? values.following_error.toFixed(2) : values.following_error;
+              } else {
+                errEl.textContent = '0.00';
+              }
+            }
+          }
+        }
+      } catch (err) {
+        console.error('Error reading axis values from AxisController:', err);
+      }
+    }
+
+    // Render inputs
+    function renderInputs(inputs) {
+      const container = $('inputsList');
+      container.innerHTML = '';
+
+      Object.keys(inputs).forEach((name) => {
+        const meta = inputs[name];
+        const row = document.createElement('div');
+        row.className = 'io-row';
+
+        row.innerHTML = `
+          <div class="io-info">
+            <div class="io-name">${name}</div>
+            <div class="io-desc">${meta.type} - ${meta.description}</div>
+          </div>
+          <div class="io-control">
+            ${createInputControl(name, meta)}
+          </div>
+        `;
+
+        container.appendChild(row);
+
+        // ========== ADD EVENT LISTENER FOR AUTO-SAVE ==========
+        // When the user modifies an input, automatically save in cache
+        setTimeout(() => {
+          const inputEl = $(`input-${name}`);
+          if (inputEl) {
+            inputEl.addEventListener('change', () => {
+              if (state.currentAxis) {
+                saveCurrentAxisState(state.currentAxis);
+                console.log(`💾 💾 Auto-save: input "${name}" modified for axis ${state.currentAxis}`);
+              }
+            });
+          }
+        }, 50);
+        // ===========================================================
+      });
+    }
+
+    // Create input control
+    function createInputControl(name, meta) {
+      if (meta.type === 'BOOL') {
+        return `<input type="checkbox" id="input-${name}">`;
+      } else {
+        const inputType = ['INT', 'DINT', 'UINT', 'UDINT', 'WORD', 'DWORD'].includes(meta.type) ? 'number' : 'text';
+        const step = ['LREAL', 'REAL'].includes(meta.type) ? 'any' : '1';
+        return `<input type="${inputType}" id="input-${name}" step="${step}">`;
+      }
+    }
+
+    // Render outputs with LED indicators
+    function renderOutputs(outputs) {
+      const container = $('outputsList');
+      container.innerHTML = '';
+
+      // Create status indicators for boolean outputs (legacy, kept for compatibility)
+      const indicators = $('statusIndicators');
+      indicators.innerHTML = '';
+
+      // Create status badges inline (NEW!)
+      const badgesContainer = $('statusBadges');
+      badgesContainer.innerHTML = '';
+      let hasBadges = false;
+
+      Object.keys(outputs).forEach((name) => {
+        const meta = outputs[name];
+        const row = document.createElement('div');
+        row.className = 'io-row';
+
+        // Use LED indicator for BOOL outputs
+        const outputDisplay = meta.type === 'BOOL'
+          ? `<div class="led-indicator off" id="output-${name}"><div class="led-dot"></div><span>OFF</span></div>`
+          : `<div class="io-value" id="output-${name}">--</div>`;
+
+        row.innerHTML = `
+          <div class="io-info">
+            <div class="io-name">${name}</div>
+            <div class="io-desc">${meta.type} - ${meta.description}</div>
+          </div>
+          ${outputDisplay}
+        `;
+
+        container.appendChild(row);
+
+        // Add to status indicators (legacy)
+        if (meta.type === 'BOOL' && ['Done', 'Busy', 'Active', 'Error', 'Status', 'InVelocity', 'CommandAborted'].includes(name)) {
+          const indicator = document.createElement('div');
+          indicator.className = 'status-indicator';
+          indicator.innerHTML = `
+            <div class="indicator-label">${name}</div>
+            <div class="indicator-value" id="indicator-${name}">FALSE</div>
+          `;
+          indicators.appendChild(indicator);
+
+          // Add to inline badges (NEW!)
+          const badge = document.createElement('div');
+          badge.className = 'status-badge-inline';
+          badge.id = `badge-${name}`;
+          badge.innerHTML = `
+            <div class="dot"></div>
+            <span>${name}</span>
+          `;
+          badgesContainer.appendChild(badge);
+          hasBadges = true;
+        }
+      });
+
+      // Show/hide badges container
+      if (hasBadges) {
+        badgesContainer.style.display = 'flex';
+      }
+    }
+
+    // Collect inputs
+    function collectInputs() {
+      const inputs = {};
+      if (!state.fbDef) return inputs;
+
+      const defs = state.fbDef.inputs || {};
+      Object.keys(defs).forEach((name) => {
+        const meta = defs[name];
+        const el = $(`input-${name}`);
+        if (!el) return;
+
+        if (meta.type === 'BOOL') {
+          inputs[name] = el.checked;
+        } else {
+          const raw = el.value;
+          if (raw !== '') {
+            inputs[name] = raw;
+          }
+        }
+      });
+
+      return inputs;
+    }
+
+    // Update outputs with LED colors
+    function updateOutputs(outputs, errorDescription) {
+      Object.keys(outputs).forEach((name) => {
+        const value = outputs[name];
+        const el = $(`output-${name}`);
+        const indicator = $(`indicator-${name}`);
+
+        if (el) {
+          // Check if it's a LED indicator (BOOL output)
+          if (el.classList.contains('led-indicator')) {
+            updateLED(el, name, value);
+          } else {
+            // Normal value display
+            el.textContent = formatValue(value, name);
+
+            // Add error class if ErrorID is non-zero
+            if (name === 'ErrorID' && value && value != 0) {
+              el.classList.add('error');
+            } else {
+              el.classList.remove('error');
+            }
+          }
+        }
+
+        if (indicator) {
+          indicator.textContent = value ? 'TRUE' : 'FALSE';
+          indicator.className = 'indicator-value';
+
+          if (value) {
+            if (name === 'Error' || name === 'CommandAborted') {
+              indicator.classList.add('error');
+            } else if (name === 'Busy') {
+              indicator.classList.add('warning');
+            } else {
+              indicator.classList.add('true');
+            }
+          } else {
+            indicator.classList.add('false');
+          }
+        }
+
+        // Update inline badge (NEW!)
+        const badge = $(`badge-${name}`);
+        if (badge) {
+          badge.className = 'status-badge-inline';
+          if (value) {
+            if (name === 'Error' || name === 'CommandAborted') {
+              badge.classList.add('error-state');
+            } else if (name === 'Busy' || name === 'Warning') {
+              badge.classList.add('warning-state');
+            } else {
+              badge.classList.add('active');
+            }
+          }
+        }
+      });
+
+      // Show/hide error display
+      const errorId = outputs.ErrorID || 0;
+      const errorDisplay = $('errorDisplay');
+      if (errorId && errorId != 0) {
+        errorDisplay.classList.add('active');
+        $('errorCode').textContent = `Error Code: ${errorId}`;
+        $('errorDesc').textContent = errorDescription || 'Error description not available';
+      } else {
+        errorDisplay.classList.remove('active');
+      }
+    }
+
+    // Update LED indicator with appropriate color
+    function updateLED(element, name, value) {
+      // Remove all state classes
+      element.classList.remove('off', 'done', 'error', 'busy', 'active', 'velocity', 'aborted');
+
+      const textSpan = element.querySelector('span');
+
+      if (value) {
+        // Assign color based on output name
+        if (name === 'Done') {
+          element.classList.add('done');
+          textSpan.textContent = 'DONE';
+        } else if (name === 'Error') {
+          element.classList.add('error');
+          textSpan.textContent = 'ERROR';
+        } else if (name === 'Busy') {
+          element.classList.add('busy');
+          textSpan.textContent = 'BUSY';
+        } else if (name === 'Active') {
+          element.classList.add('active');
+          textSpan.textContent = 'ACTIVE';
+        } else if (name === 'InVelocity' || name === 'InGear' || name === 'InSync') {
+          element.classList.add('velocity');
+          textSpan.textContent = 'ON';
+        } else if (name === 'CommandAborted') {
+          element.classList.add('aborted');
+          textSpan.textContent = 'ABORTED';
+        } else {
+          element.classList.add('done');
+          textSpan.textContent = 'ON';
+        }
+      } else {
+        element.classList.add('off');
+        textSpan.textContent = 'OFF';
+      }
+    }
+
+    // Format value based on datatype
+    function formatValue(val, name) {
+      if (val === null || val === undefined) return '--';
+      if (typeof val === 'boolean') return val ? 'TRUE' : 'FALSE';
+
+      if (typeof val === 'number') {
+        // Check if the type is an integer type based on FB definition
+        let isIntegerType = false;
+        if (name && state.fbDef && state.fbDef.outputs && state.fbDef.outputs[name]) {
+          const type = state.fbDef.outputs[name].type;
+          isIntegerType = ['INT', 'DINT', 'UINT', 'UDINT', 'WORD', 'DWORD'].includes(type);
+        }
+
+        if (isIntegerType) {
+          return String(Math.round(val)); // Display as integer
+        } else {
+          return val.toFixed(2); // Display as decimal for LREAL/REAL
+        }
+      }
+      return String(val);
+    }
+
+    // Update input fields from PLC-read values
+    function updateInputsFromPLC(inputs) {
+      if (!inputs) return;
+
+      Object.keys(inputs).forEach((name) => {
+        const el = $(`input-${name}`);
+        if (!el) return;
+
+        const value = inputs[name];
+        if (value === null || value === undefined) return;
+
+        if (el.type === 'checkbox') {
+          el.checked = Boolean(value);
+        } else {
+          el.value = value;
+        }
+      });
+    }
+
+    // Read function block
+    async function readFB() {
+      if (state.readInFlight) return;
+
+      const structVar = $('structVar').value.trim();
+      const fbName = $('fbSelect').value;
+      const axisDropdown = $('axisDropdown');
+      const axisName = axisDropdown ? axisDropdown.value : '';
+
+      if (!structVar || !fbName) return;
+
+      state.readInFlight = true;
+
+      try {
+        const res = await fetch('/api/plcopen/read_fb', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            struct_variable: structVar,
+            function_block: fbName,
+            axis_name: axisName
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          // Update input fields from PLC only on first read after FB change
+          if (state.needsInputSync) {
+            updateInputsFromPLC(data.state.inputs || {});
+            state.needsInputSync = false;
+          }
+          updateOutputs(data.state.outputs || {}, data.error_description);
+          // Also read axis values
+          readAxisValues();
+        } else {
+          showStatus('Read failed: ' + data.error, 'error');
+        }
+      } catch (err) {
+        showStatus('Read error: ' + err.message, 'error');
+      } finally {
+        state.readInFlight = false;
+      }
+    }
+
+    // Execute function block
+    async function executeFB() {
+      const structVar = $('structVar').value.trim();
+      const fbName = $('fbSelect').value;
+      const axisDropdown = $('axisDropdown');
+      const axisName = axisDropdown ? axisDropdown.value : '';
+
+      if (!structVar || !fbName) {
+        showStatus('Please configure Axis Variable and Function Block', 'warning');
+        return;
+      }
+
+      const inputs = collectInputs();
+
+      try {
+        const res = await fetch('/api/plcopen/execute_fb', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            struct_variable: structVar,
+            function_block: fbName,
+            axis_name: axisName,
+            inputs: inputs
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showStatus('Command executed successfully', 'success');
+
+          // ========== SAVE STATE IN CACHE ==========
+          if (state.currentAxis) {
+            saveCurrentAxisState(state.currentAxis);
+            console.log(`💾 💾 State updated in cache for axis: ${state.currentAxis}`);
+          }
+          // ===========================================
+
+          setTimeout(readFB, 100);
+        } else {
+          showStatus('Execute failed: ' + data.error, 'error');
+        }
+      } catch (err) {
+        showStatus('Execute error: ' + err.message, 'error');
+      }
+    }
+
+    // Enable Axis (MC_Power)
+    async function enableAxis() {
+      const structVar = $('structVar').value.trim();
+      const axisDropdown = $('axisDropdown');
+      const axisName = axisDropdown ? axisDropdown.value : '';
+
+      if (!structVar) {
+        showStatus('Please select an axis first', 'warning');
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/plcopen/execute_fb', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            struct_variable: structVar,
+            function_block: 'MC_Power',
+            axis_name: axisName,
+            inputs: {
+              Enable: true,
+              Execute: false
+            }
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showStatus('✓ Axis enabled successfully', 'success');
+          setTimeout(readFB, 100);
+        } else {
+          showStatus('Enable failed: ' + data.error, 'error');
+        }
+      } catch (err) {
+        showStatus('Enable error: ' + err.message, 'error');
+      }
+    }
+
+    // Emergency Stop
+    async function emergencyStop() {
+      const structVar = $('structVar').value.trim();
+
+      if (!structVar) {
+        showStatus('No axis selected', 'warning');
+        return;
+      }
+
+      if (!confirm('⚠️ Execute EMERGENCY STOP?')) {
+        return;
+      }
+
+      try {
+        const res = await fetch('/api/plcopen/emergency_stop', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            struct_variable: structVar,
+            deceleration: 50000,
+            jerk: 0
+          })
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          showStatus('⚠️ EMERGENCY STOP ACTIVATED', 'error');
+          setTimeout(fetchLogs, 200);
+        } else {
+          showStatus('Emergency stop failed: ' + data.error, 'error');
+        }
+      } catch (err) {
+        showStatus('Emergency stop error: ' + err.message, 'error');
+      }
+    }
+
+    // Fetch logs
+    async function fetchLogs() {
+      if (state.logInFlight) return;
+      state.logInFlight = true;
+
+      try {
+        const limit = parseInt($('logLimit').value) || 100;
+        const res = await fetch(`/api/plcopen/logs?limit=${limit}`);
+        const data = await res.json();
+
+        if (data.success) {
+          renderLogs(data.logs || []);
+        }
+      } catch (err) {
+        console.error('Log fetch error:', err);
+      } finally {
+        state.logInFlight = false;
+      }
+    }
+
+    // Render logs
+    function renderLogs(logs) {
+      const tbody = $('logBody');
+      tbody.innerHTML = '';
+
+      if (!logs.length) {
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; color: var(--text-muted);">No logs yet</td></tr>';
+        return;
+      }
+
+      logs.reverse().forEach((log) => {
+        const row = document.createElement('tr');
+
+        const eventClass = log.event === 'EMERGENCY_STOP' ? 'emergency' :
+          log.event === 'Execute' ? 'execute' :
+            log.event === 'Done' ? 'done' :
+              log.event === 'Error' ? 'error' : '';
+
+        // Format parameters object elegantly
+        let formattedParams = '';
+        let formattedFeedback = '';
+
+        if (log.parameters) {
+          const skipKeys = ['value', 'ErrorID', 'Description', 'Actual Position', 'Actual Velocity', 'Actual Torque', 'Following Error', 'Execute', 'Enable', 'Start'];
+          const paramParts = [];
+
+          // Show Error or Value
+          if (log.parameters.Description) {
+            paramParts.push(`<strong style="color:var(--red)">Err:</strong> ${log.parameters.ErrorID} - ${log.parameters.Description}`);
+          } else if (log.parameters.value !== undefined) {
+            let v = log.parameters.value;
+            let colorStr = v === true ? 'var(--green)' : v === false ? 'var(--red)' : 'inherit';
+            paramParts.push(`<strong>Value:</strong> <span style="color:${colorStr}; font-weight:bold">${v}</span>`);
+          } else {
+            // For Execute/Enable/Start events, find the main boolean trigger and show it as Value
+            let triggerVal = undefined;
+            if (log.parameters.Execute !== undefined) triggerVal = log.parameters.Execute;
+            if (log.parameters.Start !== undefined) triggerVal = log.parameters.Start;
+            if (log.parameters.Enable !== undefined) triggerVal = log.parameters.Enable; // Enable overrides Execute for MC_Power
+
+            if (triggerVal !== undefined) {
+              let colorStr = triggerVal === true ? 'var(--green)' : triggerVal === false ? 'var(--red)' : 'inherit';
+              paramParts.push(`<strong>Value:</strong> <span style="color:${colorStr}; font-weight:bold">${triggerVal}</span>`);
+            }
+          }
+
+          Object.keys(log.parameters).forEach(key => {
+            if (!skipKeys.includes(key)) {
+              let val = log.parameters[key];
+              if (typeof val === 'number') val = val.toFixed(2);
+              paramParts.push(`<strong>${key}:</strong> ${val}`);
+            }
+          });
+
+          formattedParams = paramParts.join(' <span style="color:var(--border-dark); margin:0 4px;">|</span> ');
+
+          const fbParts = [];
+          ['Actual Position', 'Actual Velocity', 'Actual Torque', 'Following Error'].forEach(k => {
+            if (log.parameters[k] !== undefined) {
+              fbParts.push(`<strong>${k}:</strong> ${typeof log.parameters[k] === 'number' ? log.parameters[k].toFixed(2) : log.parameters[k]}`);
+            }
+          });
+
+          if (fbParts.length > 0) {
+            formattedFeedback = `<div style="margin-top: 4px; padding-top: 4px; border-top: 1px dashed var(--border-dark); display: flex; gap: 12px; flex-wrap: wrap;">${fbParts.join(' <span style="color:var(--border-dark);">|</span> ')}</div>`;
+          }
+        }
+
+        row.innerHTML = `
+          <td>${new Date(log.timestamp).toLocaleTimeString()}</td>
+          <td>${log.axis || '--'}</td>
+          <td>${log.function_block || '--'}</td>
+          <td><span class="log-event ${eventClass}">${log.event}</span></td>
+          <td style="font-size: 13px; color: var(--text-primary); line-height: 1.4;">
+             <div>${formattedParams}</div>
+             ${formattedFeedback}
+          </td>
+        `;
+
+        tbody.appendChild(row);
+      });
+    }
+
+    // Clear logs
+    async function clearLogs() {
+      try {
+        await fetch('/api/plcopen/clear_logs', { method: 'POST' });
+        fetchLogs();
+        showStatus('Logs cleared', 'success');
+      } catch (err) {
+        showStatus('Failed to clear logs', 'error');
+      }
+    }
+
+    // Auto read
+    function updateAutoRead() {
+      if (state.readTimer) {
+        clearInterval(state.readTimer);
+        state.readTimer = null;
+      }
+
+      if ($('autoRead').checked) {
+        const interval = Math.max(0.01, parseFloat($('readInterval').value) || 0.1);
+        state.readTimer = setInterval(() => {
+          readFB();
+          readAxisValues();
+        }, interval * 1000);
+      }
+    }
+
+    // Auto logs
+    function updateAutoLogs() {
+      if (state.logTimer) {
+        clearInterval(state.logTimer);
+        state.logTimer = null;
+      }
+
+      if ($('autoLogs').checked) {
+        const interval = Math.max(1, parseInt($('logInterval').value) || 3);
+        state.logTimer = setInterval(fetchLogs, interval * 1000);
+      }
+    }
+
+    // Show status message
+    function showStatus(message, type) {
+      const msg = $('statusMsg');
+      msg.className = 'status-message ' + type;
+      msg.textContent = message;
+
+      setTimeout(() => {
+        msg.className = 'status-message';
+      }, 5000);
+    }
+
+    // Function that loads axes automatically on startup
+    function loadAxesAuto() {
+      const dropdown = document.getElementById('axisDropdown');
+      const inputVar = document.getElementById('structVar');
+
+      // 1. SET FIXED CONTROL VARIABLE
+      if (inputVar) {
+        inputVar.value = HMI_CONTROL_VAR;
+        // Make it read-only to avoid confusion, or leave editable
+        // inputVar.readOnly = true; 
+      }
+      state.axisStructPath = HMI_CONTROL_VAR;
+
+      if (!dropdown) {
+        console.error("CRITICAL ERROR: 'axisDropdown' element not found in HTML!");
+        return;
+      }
+
+      logStatus("Contacting server...", "blue");
+
+      // Call to server
+      fetch('/api/v1/discover/axes')
+        .then(response => {
+          if (!response.ok) {
+            throw new Error("Server responds with status: " + response.status);
+          }
+          return response.json();
+        })
+        .then(data => {
+          // Clear menu
+          dropdown.innerHTML = '';
+
+          if (data.success && data.axes && data.axes.length > 0) {
+            // ========== CLEANUP INVALID AXES CACHE ==========
+            const validAxisNames = data.axes.map(axis => axis.name);
+            cleanupAxisCache(validAxisNames);
+            // ======================================================
+
+            // Add default option
+            let defaultOpt = document.createElement('option');
+            defaultOpt.text = "-- Select an axis --";
+            defaultOpt.value = "";
+            defaultOpt.disabled = true;
+            //defaultOpt.selected = true;
+            dropdown.add(defaultOpt);
+
+            // Loop on received axes
+            data.axes.forEach(axis => {
+              let option = document.createElement('option');
+              // Use simple_name if present, otherwise full name
+              let label = axis.simple_name ? axis.simple_name : axis.name;
+
+              option.value = axis.name;  // Value sent to PLC (full path)
+              option.text = label;       // Text visible to user
+              dropdown.add(option);
+            });
+
+            logStatus(`Loaded ${data.axes.length} axes.`, "green");
+
+            // Enable menu (if it was disabled)
+            dropdown.disabled = false;
+
+            // Automatically select the first axis
+            if (dropdown.options.length > 1) {
+              dropdown.selectedIndex = 1;
+              // Set first axis as currentAxis
+              state.currentAxis = dropdown.value;
+              // Trigger axis change
+              dropdown.dispatchEvent(new Event('change'));
+            }
+
+          } else {
+            let failOpt = document.createElement('option');
+            failOpt.text = "No axes found";
+            dropdown.add(failOpt);
+            logStatus("No axes found in the list.", "orange");
+          }
+        })
+        .catch(error => {
+          console.error("Fetch Error:", error);
+          logStatus("Error: " + error.message, "red");
+
+          // Add error option in the menu to make it obvious
+          dropdown.innerHTML = '<option>Connection error</option>';
+        });
+    }
+
+    // Handle menu selection -> copy to input field and copy AXIS_REF
+    const dd = document.getElementById('axisDropdown');
+    if (dd) {
+      // We use 'async' to be able to use 'await' (cleaner)
+      dd.addEventListener('change', async function () {
+        const selectedAxis = this.value;
+        if (!selectedAxis) return;
+
+        logStatus(`Changing axis: ${selectedAxis}...`, "blue");
+
+        // ========== STEP 1: RESET ALL FBs (CRITICAL SAFETY) ==========
+        // Before changing axis, reset ALL function blocks to avoid unwanted executions
+        if (state.currentAxis && state.currentAxis !== selectedAxis) {
+          console.log(`🛑 Resetting ALL function blocks before changing axis...`);
+
+          try {
+            // Fetch the full list of function blocks from the server
+            const fbRes = await fetch('/api/plcopen/function_blocks');
+            const fbData = await fbRes.json();
+
+            if (fbData.success && fbData.function_blocks) {
+              const allFBNames = Object.keys(fbData.function_blocks);
+
+              // For each FB, determine the correct boolean trigger(s) to reset
+              for (const fbName of allFBNames) {
+                const fbDef = fbData.function_blocks[fbName];
+                const resetInputs = {};
+
+                // Check which boolean triggers this FB has and set them to false
+                if (fbDef.inputs) {
+                  if (fbDef.inputs.Execute) resetInputs.Execute = false;
+                  if (fbDef.inputs.Enable) resetInputs.Enable = false;
+                  if (fbDef.inputs.Start) resetInputs.Start = false;
+                }
+
+                // Only send reset if there are triggers to reset
+                if (Object.keys(resetInputs).length > 0) {
+                  try {
+                    await fetch('/api/plcopen/execute_fb', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({
+                        struct_variable: HMI_CONTROL_VAR,
+                        function_block: fbName,
+                        inputs: resetInputs
+                      })
+                    });
+                    console.log(`✓ ${fbName} reset`);
+                  } catch (err) {
+                    console.warn(`Warning: ${fbName} reset failed, proceeding anyway:`, err);
+                  }
+                }
+              }
+
+              console.log(`✓ All ${allFBNames.length} function blocks reset before axis change`);
+            }
+          } catch (err) {
+            console.warn('Warning: Failed to fetch function blocks for reset, proceeding anyway:', err);
+          }
+
+          // Reset emergency stop visual state
+          state.emergencyStopActive = false;
+          updateEmergencyBtnVisual();
+
+          // Small delay to allow PLC to process resets
+          await new Promise(resolve => setTimeout(resolve, 200));
+        }
+        // ==================================================================
+
+        // ========== STEP 2: SAVE PREVIOUS AXIS STATE ==========
+        if (state.currentAxis && state.currentAxis !== selectedAxis) {
+          saveCurrentAxisState(state.currentAxis);
+          console.log(`💾 State saved for previous axis: ${state.currentAxis}`);
+        }
+        // =========================================================
+
+        try {
+          // STEP 3: Copy AXIS_REF to new axis (with retry for PLC startup timing)
+          let copySuccess = false;
+          let copyData = null;
+          const maxRetries = 5;
+
+          for (let attempt = 1; attempt <= maxRetries; attempt++) {
+            try {
+              const response = await fetch('/api/v1/copy/axis_ref', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                  source_axis: selectedAxis,
+                  target_axis: PLC_POINTER_VAR
+                })
+              });
+
+              copyData = await response.json();
+
+              if (copyData.success) {
+                copySuccess = true;
+                break;
+              } else {
+                console.warn(`copy_axis_ref attempt ${attempt}/${maxRetries} failed: ${copyData.error}`);
+                if (attempt < maxRetries) {
+                  logStatus(`Axis setup retry ${attempt}/${maxRetries}...`, 'warning');
+                  await new Promise(resolve => setTimeout(resolve, 3000));
+                }
+              }
+            } catch (fetchErr) {
+              console.warn(`copy_axis_ref attempt ${attempt}/${maxRetries} error: ${fetchErr.message}`);
+              if (attempt < maxRetries) {
+                logStatus(`Axis setup retry ${attempt}/${maxRetries}...`, 'warning');
+                await new Promise(resolve => setTimeout(resolve, 3000));
+              }
+            }
+          }
+
+          if (copySuccess) {
+            logStatus(`Active: ${selectedAxis}`, "green");
+
+            // STEP 4: Update current axis
+            state.currentAxis = selectedAxis;
+
+            // STEP 5: Safety delay
+            await new Promise(resolve => setTimeout(resolve, 300));
+
+            // STEP 6: ========== LOAD STATE IN "SOFT" MODE ==========
+            // Visually restore FB and inputs from cache (if existing)
+            // But DOES NOT automatically execute any command
+            const cached = axisStateCache[selectedAxis];
+
+            if (cached && cached.fbName) {
+              console.log(`📂 Cache found for ${selectedAxis}:`, cached);
+
+              // Restore the selected FB in the dropdown
+              const fbSelect = $('fbSelect');
+              if (fbSelect) {
+                fbSelect.value = cached.fbName;
+
+                // Load the FB definition
+                await loadDefinition();
+
+                // Restore input values AFTER UI is ready
+                setTimeout(() => {
+                  restoreInputValues(cached.inputs);
+
+                  // Show informational message
+                  showStatus(`✓ State restored from cache - Verify parameters before executing`, 'success');
+                  console.log(`✓ Inputs restored from cache - READY (not executed)`);
+                }, 150);
+              }
+            } else {
+              console.log(`ℹ No cache for ${selectedAxis} - clean state`);
+
+              // If there is no cache, reset the UI
+              const fbSelect = $('fbSelect');
+              if (fbSelect) {
+                fbSelect.selectedIndex = 0; // Back to "-- Select Function Block --"
+
+                // Hide input/output cards
+                $('inputsCard').style.display = 'none';
+                $('outputsCard').style.display = 'none';
+                // statusCard is now in legacy mode, keep hidden
+              }
+            }
+            // =============================================================
+
+            // STEP 7: Read axis live values (position, velocity, torque)
+            readAxisValues();
+
+          } else {
+            logStatus(`Axis change error: ${copyData ? copyData.error : 'Connection failed after retries'}`, "red");
+          }
+
+        } catch (err) {
+          console.error(err);
+          logStatus(`Network error: ${err.message}`, "red");
+        }
+      });
+    }
+
+    // ==================== PROJECT SWITCH ====================
+
+    /**
+     * Polls the health endpoint until gRPC is confirmed ready.
+     * Returns a Promise that resolves when the PLC is responsive.
+     * Timeout after 90 seconds as safety net.
+     */
+    function waitForGrpcReady(maxWaitMs = 90000, intervalMs = 3000) {
+      return new Promise((resolve) => {
+        const startTime = Date.now();
+
+        const poll = async () => {
+          try {
+            const res = await fetch('/api/health');
+            const data = await res.json();
+
+            if (data.status === 'ok' && data.grpc === true) {
+              console.log('✓ gRPC is ready after project switch');
+              resolve();
+              return;
+            }
+          } catch (err) {
+            // Server might not be reachable during restart, keep trying
+          }
+
+          // Check timeout
+          if (Date.now() - startTime > maxWaitMs) {
+            console.warn('⚠ gRPC readiness timeout, proceeding anyway');
+            resolve();
+            return;
+          }
+
+          // Try again
+          setTimeout(poll, intervalMs);
+        };
+
+        // Start polling after a short initial delay
+        setTimeout(poll, 2000);
+      });
+    }
+
+    async function checkProjectStatus() {
+      try {
+        const res = await fetch('/api/v1/project/status');
+        const data = await res.json();
+
+        if (data.success) {
+          updateProjectToggleUI(data.state);
+          return data.state;
+        }
+      } catch (err) {
+        console.error('Error checking project status:', err);
+      }
+      return null;
+    }
+
+    function updateProjectToggleUI(newState) {
+      const toggle = $('projectSwitchToggle');
+      const status = $('projectSwitchStatus');
+      const overlay = $('switchingOverlay');
+
+      const previousState = state.projectState;
+      state.projectState = newState;
+
+      // Remove all state classes
+      toggle.classList.remove('active', 'switching');
+
+      if (newState === 'app_project') {
+        toggle.classList.add('active');
+        status.textContent = 'App Project';
+
+        const noAppOverlay = $('appNotActiveOverlay');
+        if (noAppOverlay) noAppOverlay.style.display = 'none';
+
+        // Stop project state polling
+        if (state.projectPollTimer) {
+          clearInterval(state.projectPollTimer);
+          state.projectPollTimer = null;
+        }
+
+        // Reload axes ONLY on actual transition (switching → app_project)
+        if (previousState === 'switching') {
+          // Keep the overlay visible while waiting for gRPC to become ready
+          $('switchingTitle').textContent = 'Waiting for PLC...';
+
+          // Poll health endpoint until gRPC is ready, then load axes
+          waitForGrpcReady().then(() => {
+            overlay.classList.remove('active');
+            loadAxesAuto();
+          });
+        } else {
+          overlay.classList.remove('active');
+        }
+
+      } else if (newState === 'switching') {
+        toggle.classList.add('switching');
+        status.textContent = 'Switching...';
+        overlay.classList.add('active');
+
+        const noAppOverlay = $('appNotActiveOverlay');
+        if (noAppOverlay) noAppOverlay.style.display = 'flex';
+
+        // Start polling if not already
+        if (!state.projectPollTimer) {
+          state.projectPollTimer = setInterval(checkProjectStatus, 3000);
+        }
+
+      } else {
+        // user_project
+        status.textContent = 'User Project';
+        overlay.classList.remove('active');
+
+        const noAppOverlay = $('appNotActiveOverlay');
+        if (noAppOverlay) noAppOverlay.style.display = 'flex';
+
+        // Stop polling
+        if (state.projectPollTimer) {
+          clearInterval(state.projectPollTimer);
+          state.projectPollTimer = null;
+        }
+      }
+    }
+
+    async function toggleProjectSwitch() {
+      // Don't allow switching while already switching
+      if (state.projectState === 'switching') return;
+
+      // Determine action text for the confirmation dialog
+      const isCurrentlyApp = state.projectState === 'app_project';
+      const actionText = isCurrentlyApp
+        ? 'Deactivate the App Project and restore the User Project (PCWE)?'
+        : 'Activate the App Project? This will copy EtherCAT and Motion Control configuration from the User Project.';
+
+      // Confirmation dialog
+      const confirmed = confirm(
+        `⚠️ PLC Restart Required\n\n${actionText}\n\nThe PLC will be restarted. This operation takes 15–30 seconds.\n\nContinue?`
+      );
+
+      if (!confirmed) return;
+
+      try {
+        // Immediately show switching state
+        updateProjectToggleUI('switching');
+        $('switchingTitle').textContent = isCurrentlyApp
+          ? 'Restoring User Project'
+          : 'Activating App Project';
+
+        const res = await fetch('/api/v1/project/switch', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' }
+        });
+
+        const data = await res.json();
+
+        if (data.success) {
+          console.log(`Project switch initiated: ${data.action}`);
+          // Polling is already started by updateProjectToggleUI('switching')
+        } else {
+          showStatus('Project switch failed: ' + (data.error || 'Unknown error'), 'error');
+          // Revert UI
+          await checkProjectStatus();
+        }
+      } catch (err) {
+        showStatus('Project switch error: ' + err.message, 'error');
+        // Revert UI
+        await checkProjectStatus();
+      }
+    }
+
+    // ==================== END PROJECT SWITCH ====================
+
+    // Initialize
+    document.addEventListener('DOMContentLoaded', () => {
+      // ========== LOAD AXES CACHE FROM LOCALSTORAGE ==========
+      loadAxisCacheFromStorage();
+      console.log('🚀 Axes cache system initialized');
+      // =======================================================
+
+      // Load theme
+      loadTheme();
+
+      // Check project state on load (set toggle to correct position)
+      checkProjectStatus();
+
+      // Load axes
+      loadAxesAuto();
+
+      // Load saved struct variable
+      const saved = localStorage.getItem('axis_struct_var');
+      if (saved) $('structVar').value = saved;
+
+      $('structVar').addEventListener('input', () => {
+        localStorage.setItem('axis_struct_var', $('structVar').value);
+        state.axisStructPath = $('structVar').value.trim();
+      });
+
+      // Auto-load when FB selected
+      $('fbSelect').addEventListener('change', loadDefinition);
+
+      // Event listeners
+      $('autoRead').addEventListener('change', updateAutoRead);
+      $('readInterval').addEventListener('change', updateAutoRead);
+      $('autoLogs').addEventListener('change', updateAutoLogs);
+      $('logInterval').addEventListener('change', updateAutoLogs);
+
+      // Initial load
+      loadFunctionBlocks();
+      checkHealth();
+      fetchLogs();
+
+      // Periodic health check + project status check
+      setInterval(checkHealth, 5000);
+      setInterval(checkProjectStatus, 10000);  // Periodic sync of project state
+    });
+  </script>
+</body>
+
+</html>

@@ -1,0 +1,51 @@
+{
+	"cmake" : 
+	{
+		"generator" : 
+		{
+			"multiConfig" : false,
+			"name" : "Unix Makefiles"
+		},
+		"paths" : 
+		{
+			"cmake" : "C:/Program Files/YASKAWA/iCube Engineer Toolchain 2025.6/cmake/bin/cmake.exe",
+			"cpack" : "C:/Program Files/YASKAWA/iCube Engineer Toolchain 2025.6/cmake/bin/cpack.exe",
+			"ctest" : "C:/Program Files/YASKAWA/iCube Engineer Toolchain 2025.6/cmake/bin/ctest.exe",
+			"root" : "C:/Program Files/YASKAWA/iCube Engineer Toolchain 2025.6/cmake/share/cmake-3.27"
+		},
+		"version" : 
+		{
+			"isDirty" : false,
+			"major" : 3,
+			"minor" : 27,
+			"patch" : 7,
+			"string" : "3.27.7",
+			"suffix" : ""
+		}
+	},
+	"objects" : 
+	[
+		{
+			"jsonFile" : "codemodel-v2-67925656bd0d8d06d869.json",
+			"kind" : "codemodel",
+			"version" : 
+			{
+				"major" : 2,
+				"minor" : 6
+			}
+		}
+	],
+	"reply" : 
+	{
+		"codemodel-v2" : 
+		{
+			"jsonFile" : "codemodel-v2-67925656bd0d8d06d869.json",
+			"kind" : "codemodel",
+			"version" : 
+			{
+				"major" : 2,
+				"minor" : 6
+			}
+		}
+	}
+}

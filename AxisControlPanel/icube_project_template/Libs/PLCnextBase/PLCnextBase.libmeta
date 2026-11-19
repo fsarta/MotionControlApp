@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MetaConfigurationDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" schemaVersion="2.0" xmlns="http://www.phoenixcontact.com/schema/metaconfig">
+  <Library name="PLCnextBase" applicationDomain="CPLUSPLUS">
+    <File path="libPLCnextBase.so" />
+    <Dependencies>
+      <Dependency path="libPLCnextBase.Services.so" />
+      <Dependency path="libPLCnextBase.Net.so" />
+      <Dependency path="libPLCnextBase.ArpAdapter.so" />
+      <Dependency path="libPLCnextBase.Core.so" />
+    </Dependencies>
+    <TypeIncludes>
+      <Include path="PLCnextBase.typemeta" />
+    </TypeIncludes>
+    <ComponentIncludes>
+      <Include path="RtComponent/RtComponent.compmeta" />
+    </ComponentIncludes>
+  </Library>
+</MetaConfigurationDocument>

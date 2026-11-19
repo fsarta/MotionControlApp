@@ -1,0 +1,158 @@
+TYPE
+    QualifiedBoolean : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : BOOL;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedInt8 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : SINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedUInt8 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : USINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedInt16 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : INT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedUInt16 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : UINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedInt32 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : DINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedUInt32 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : UDINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedFloat32 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : REAL;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedInt64 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : LINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedUInt64 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : ULINT;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedFloat64 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : LREAL;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedString80 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : STRING;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedString512 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : STRING[512];
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedWString80 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : WSTRING;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualifiedWString512 : STRUCT
+        Timestamp : ULINT;
+        Quality : QualityValue;
+        Value : WSTRING[512];
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualityValue : STRUCT
+        Flags : QualityFlags;
+        State : QualityState;
+    END_STRUCT
+END_TYPE
+
+
+TYPE
+    QualityFlags : (None := 0, DeviceDefect := 1, PowerFailure := 2, WireBreak := 4, Failure := 8, OutOfRange := 192, Overrange := 64, Underrange := 128, BadReference := 512, Oscillatory := 1024, Outdated := 2048, Inconsistent := 4096, Inaccurate := 8192, Source := 33554432, Blocked := 67108864, Test := 134217728) OF UDINT;
+END_TYPE
+
+
+TYPE
+    QualityState : (None := 0, Good := 1, Questionable := 2, Invalid := 128, Bad := 255) OF USINT;
+END_TYPE
+
+
+TYPE
+
+    type14String512 : STRING[512];
+    type16WString512 : WSTRING[512];
+END_TYPE

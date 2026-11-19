@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MetaConfigurationDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" schemaVersion="2.0" xmlns="http://www.phoenixcontact.com/schema/metaconfig">
+  <Types>
+    <Struct type="QualifiedBoolean">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="boolean" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedInt8">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="int8" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedUInt8">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="uint8" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedInt16">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="int16" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedUInt16">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="uint16" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedInt32">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="int32" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedUInt32">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="uint32" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedFloat32">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="float32" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedInt64">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="int64" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedUInt64">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="uint64" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedFloat64">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="float64" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedString80">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="StaticString" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedString512">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="StaticString512" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedWString80">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="StaticWString" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualifiedWString512">
+      <Fields>
+        <Field name="Timestamp" type="uint64" attributes="" dimensions="" />
+        <Field name="Quality" type="QualityValue" attributes="" dimensions="" />
+        <Field name="Value" type="StaticWString512" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Struct type="QualityValue">
+      <Fields>
+        <Field name="Flags" type="QualityFlags" attributes="" dimensions="" />
+        <Field name="State" type="QualityState" attributes="" dimensions="" />
+      </Fields>
+    </Struct>
+    <Enumeration type="QualityFlags" baseType="uint32">
+      <Symbols>
+        <Symbol name="None" value="0"/>
+        <Symbol name="DeviceDefect" value="1"/>
+        <Symbol name="PowerFailure" value="2"/>
+        <Symbol name="WireBreak" value="4"/>
+        <Symbol name="Failure" value="8"/>
+        <Symbol name="OutOfRange" value="192"/>
+        <Symbol name="Overrange" value="64"/>
+        <Symbol name="Underrange" value="128"/>
+        <Symbol name="BadReference" value="512"/>
+        <Symbol name="Oscillatory" value="1024"/>
+        <Symbol name="Outdated" value="2048"/>
+        <Symbol name="Inconsistent" value="4096"/>
+        <Symbol name="Inaccurate" value="8192"/>
+        <Symbol name="Source" value="33554432"/>
+        <Symbol name="Blocked" value="67108864"/>
+        <Symbol name="Test" value="134217728"/>
+      </Symbols>
+    </Enumeration>
+    <Enumeration type="QualityState" baseType="uint8">
+      <Symbols>
+        <Symbol name="None" value="0"/>
+        <Symbol name="Good" value="1"/>
+        <Symbol name="Questionable" value="2"/>
+        <Symbol name="Invalid" value="128"/>
+        <Symbol name="Bad" value="255"/>
+      </Symbols>
+    </Enumeration>
+  </Types>
+</MetaConfigurationDocument>

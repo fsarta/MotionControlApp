@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<group>
+  <version creator="iCube_Engineer">1.0.0.0</version>
+  <defaultGroup>
+    <queueSize>16</queueSize>
+    <singleStep>false</singleStep>
+  </defaultGroup>
+</group>

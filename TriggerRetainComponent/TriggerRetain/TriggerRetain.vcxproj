@@ -1,0 +1,164 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug - all Targets|x86">
+      <Configuration>Debug - all Targets</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug IC9226M-EC,2026.0.3 (26.0.3.189343)|x86">
+      <Configuration>Debug IC9226M-EC,2026.0.3 (26.0.3.189343)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86">
+      <Configuration>Debug IC9226M-FSOE,2025.6.2 (25.6.2.167385)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86">
+      <Configuration>Debug IC9226M-FSOE,2026.0.3 (26.0.3.189341)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86">
+      <Configuration>Debug IC9226M-FSOE,2026.6.1 (26.6.1.214942)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release - all Targets|x86">
+      <Configuration>Release - all Targets</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release IC9226M-EC,2026.0.3 (26.0.3.189343)|x86">
+      <Configuration>Release IC9226M-EC,2026.0.3 (26.0.3.189343)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86">
+      <Configuration>Release IC9226M-FSOE,2025.6.2 (25.6.2.167385)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86">
+      <Configuration>Release IC9226M-FSOE,2026.0.3 (26.0.3.189341)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86">
+      <Configuration>Release IC9226M-FSOE,2026.6.1 (26.6.1.214942)</Configuration>
+      <Platform>x86</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="src\TriggerRetainComponent.hpp" />
+    <ClInclude Include="src\TriggerRetainLibraryInfo.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\TriggerRetainComponent.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="CMakeLists.txt" />
+    <Text Include="How_to_deploy.txt" />
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{618b4044-c0bd-4dd3-a602-50b9f41ea6b7}</ProjectGuid>
+    <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>
+    <ApplicationType>Linux</ApplicationType>
+    <ApplicationTypeRevision>1.0</ApplicationTypeRevision>
+    <TargetLinuxPlatform>Generic</TargetLinuxPlatform>
+    <LinuxProjectType>{D51BCBC9-82E9-4017-911E-C93873C4EA2B}</LinuxProjectType>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - all Targets|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'" Label="Configuration">
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - all Targets|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'" Label="Configuration">
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>WSL_1_0</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings" />
+  <ImportGroup Label="Shared" />
+  <ImportGroup Label="PropertySheets" />
+  <PropertyGroup Label="UserMacros" />
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ItemDefinitionGroup>
+    <ClCompile>
+      <ForcedIncludeFiles>$(ProjectDir)UndefClang.hpp</ForcedIncludeFiles>
+      <CLanguageStandard />
+      <CppLanguageStandard />
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug - all Targets|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release - all Targets|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+      <PreprocessorDefinitions Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'">$(PLCnCLIMacros)</PreprocessorDefinitions>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <PropertyGroup>
+    <PLCnCLIProjectType>acfproject</PLCnCLIProjectType>
+    <PLCnCLIProjectVersion>2</PLCnCLIProjectVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug - all Targets|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release - all Targets|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.6.1 (26.6.1.214942)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2025.6.2 (25.6.2.167385)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-FSOE,2026.0.3 (26.0.3.189341)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release IC9226M-EC,2026.0.3 (26.0.3.189343)|x86'">
+    <IncludePath>$(PLCnCLIIncludes)</IncludePath>
+  </PropertyGroup>
+  <ImportGroup Label="ExtensionTargets" />
+  <Import Project="$(PLCNEXT_TOOLCHAIN_INSTALLDIR)/VSCPP/PLCnCLI.targets" />
+</Project>

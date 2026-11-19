@@ -1,0 +1,18 @@
+# Exclude local Python packages (only pxc_grpc is needed, rest installed from PyPI)
+pylibs/*
+!pylibs/pxc_grpc
+
+# Exclude exported container images
+images/
+
+# Exclude Docker/Podman configuration (not needed inside the container)
+docker-compose.yml
+axis-control.container
+app_info.json
+start.sh
+Dockerfile
+.dockerignore
+
+# Exclude git
+.git/
+.gitignore

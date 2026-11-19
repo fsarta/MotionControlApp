@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<MetaConfigurationDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema" schemaVersion="2.0" xmlns="http://www.phoenixcontact.com/schema/metaconfig">
+  <Program type="Dummy_TypedefProgram">
+    <Ports>
+      <Port name="type01" type="QualifiedBoolean" attributes="" dimensions="" />
+      <Port name="type02" type="QualifiedInt8" attributes="" dimensions="" />
+      <Port name="type03" type="QualifiedUInt8" attributes="" dimensions="" />
+      <Port name="type04" type="QualifiedInt16" attributes="" dimensions="" />
+      <Port name="type05" type="QualifiedUInt16" attributes="" dimensions="" />
+      <Port name="type06" type="QualifiedInt32" attributes="" dimensions="" />
+      <Port name="type07" type="QualifiedUInt32" attributes="" dimensions="" />
+      <Port name="type08" type="QualifiedFloat32" attributes="" dimensions="" />
+      <Port name="type09" type="QualifiedInt64" attributes="" dimensions="" />
+      <Port name="type10" type="QualifiedUInt64" attributes="" dimensions="" />
+      <Port name="type11" type="QualifiedFloat64" attributes="" dimensions="" />
+      <Port name="type12" type="StaticStringBase" attributes="" dimensions="" />
+      <Port name="type13" type="StaticString" attributes="" dimensions="" />
+      <Port name="type14" type="StaticString512" attributes="" dimensions="" />
+      <Port name="type15" type="StaticWString" attributes="" dimensions="" />
+      <Port name="type16" type="StaticWString512" attributes="" dimensions="" />
+      <Port name="type17" type="QualifiedString80" attributes="" dimensions="" />
+      <Port name="type18" type="QualifiedString512" attributes="" dimensions="" />
+      <Port name="type19" type="QualifiedWString80" attributes="" dimensions="" />
+      <Port name="type20" type="QualifiedWString512" attributes="" dimensions="" />
+    </Ports>
+  </Program>
+</MetaConfigurationDocument>

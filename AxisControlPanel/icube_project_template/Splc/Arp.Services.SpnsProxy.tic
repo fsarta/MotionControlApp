@@ -1,0 +1,15 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<TIC xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.phoenixcontact.com/IMA/TIC/1.0/tic.xsd">
+  <E n="SPNSPC:Config">
+    <EL>
+      <E n="SPNSPC:SI" />
+      <E n="SPNSPC:SQ" />
+      <E n="SPNSPC:NSI" />
+      <E n="SPNSPC:NSQ" />
+      <E n="SPNSPC:DI" />
+      <E n="SPNSPC:DQ" />
+      <E n="SPNSPC:SMI" />
+      <E n="SPNSPC:SMQ" />
+    </EL>
+  </E>
+</TIC>

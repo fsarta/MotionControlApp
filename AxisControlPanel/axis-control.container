@@ -1,0 +1,40 @@
+[Unit]
+Description=AxisControlPanel - PLCopen Motion Control Web Interface
+
+[Container]
+# Container Name
+ContainerName=axis-control-panel
+
+# Image Name (use the exact name logged during podman load)
+Image=docker.io/library/axis-control-panel:latest
+
+# Network mode host (equivalent to network_mode: host in docker-compose)
+Network=host
+
+# Volume: socket gRPC PLCnext (read-only)
+Volume=/run/plcnext:/run/plcnext:ro
+
+# Volume: PLC projects (read-write per project switching)
+Volume=/opt/plcnext/projects:/opt/plcnext/projects
+
+# Volume: log directory
+Volume=/opt/plcnext/logs:/opt/plcnext/logs
+
+# Volume: user data
+Volume=/opt/plcnext/user:/opt/plcnext/user
+
+# Mapping the D-Bus socket to control systemd
+Volume=/var/run/dbus/system_bus_socket:/var/run/dbus/system_bus_socket
+
+# Environment variables
+Environment=WEBSERVER_PORT=${PORT}
+Environment=DBUS_SYSTEM_BUS_ADDRESS=unix:path=/var/run/dbus/system_bus_socket
+
+# User namespace mapping for host file access
+UserNS=keep-id:uid=1002,gid=1002
+
+[Service]
+Restart=always
+
+[Install]
+WantedBy=default.target

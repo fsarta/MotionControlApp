@@ -1,0 +1,898 @@
+{
+	"artifacts" : 
+	[
+		{
+			"path" : "libTriggerRetain.so"
+		}
+	],
+	"backtrace" : 1,
+	"backtraceGraph" : 
+	{
+		"commands" : 
+		[
+			"add_library",
+			"install",
+			"target_link_options",
+			"target_link_libraries",
+			"include",
+			"find_package",
+			"set_target_properties",
+			"find_dependency",
+			"target_include_directories"
+		],
+		"files" : 
+		[
+			"CMakeLists.txt",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpAnsiCDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpConfig.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpAppManagerDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpBaseDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpDataLoggerDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpFMKDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpEtherCATDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpPlcDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpProfinetDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpSliceBusDependency.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/ArpBase/ArpBaseTargets.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/ArpBase/ArpBaseConfig.cmake",
+			"C:/Program Files/YASKAWA/iCube Engineer Toolchain 2025.6/cmake/share/cmake-3.27/Modules/CMakeFindDependencyMacro.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/ArpAnsiC/ArpAnsiCConfig.cmake",
+			"C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/cmake/Arp/ArpTraceControllerDependency.cmake"
+		],
+		"nodes" : 
+		[
+			{
+				"file" : 0
+			},
+			{
+				"command" : 0,
+				"file" : 0,
+				"line" : 13,
+				"parent" : 0
+			},
+			{
+				"command" : 1,
+				"file" : 0,
+				"line" : 80,
+				"parent" : 0
+			},
+			{
+				"command" : 2,
+				"file" : 0,
+				"line" : 53,
+				"parent" : 0
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 40,
+				"parent" : 0
+			},
+			{
+				"command" : 5,
+				"file" : 0,
+				"line" : 66,
+				"parent" : 0
+			},
+			{
+				"file" : 2,
+				"parent" : 5
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 1,
+				"parent" : 7
+			},
+			{
+				"command" : 3,
+				"file" : 1,
+				"line" : 3,
+				"parent" : 8
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 3,
+				"parent" : 10
+			},
+			{
+				"command" : 3,
+				"file" : 3,
+				"line" : 3,
+				"parent" : 11
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 4,
+				"parent" : 13
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 9,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 11,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 14,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 16,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 18,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 17,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 22,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 25,
+				"parent" : 14
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 5,
+				"parent" : 23
+			},
+			{
+				"command" : 3,
+				"file" : 5,
+				"line" : 3,
+				"parent" : 24
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 6,
+				"parent" : 26
+			},
+			{
+				"command" : 3,
+				"file" : 6,
+				"line" : 3,
+				"parent" : 27
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 15,
+				"parent" : 14
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 7,
+				"parent" : 30
+			},
+			{
+				"command" : 3,
+				"file" : 7,
+				"line" : 3,
+				"parent" : 31
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 8,
+				"parent" : 33
+			},
+			{
+				"command" : 3,
+				"file" : 8,
+				"line" : 3,
+				"parent" : 34
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 29,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 27,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 30,
+				"parent" : 14
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 9,
+				"parent" : 39
+			},
+			{
+				"command" : 3,
+				"file" : 9,
+				"line" : 3,
+				"parent" : 40
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 12,
+				"parent" : 14
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 10,
+				"parent" : 43
+			},
+			{
+				"command" : 3,
+				"file" : 10,
+				"line" : 3,
+				"parent" : 44
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 26,
+				"parent" : 14
+			},
+			{
+				"command" : 7,
+				"file" : 1,
+				"line" : 2,
+				"parent" : 8
+			},
+			{
+				"command" : 5,
+				"file" : 13,
+				"line" : 76,
+				"parent" : 47
+			},
+			{
+				"file" : 14,
+				"parent" : 48
+			},
+			{
+				"command" : 7,
+				"file" : 14,
+				"line" : 56,
+				"parent" : 49
+			},
+			{
+				"command" : 5,
+				"file" : 13,
+				"line" : 76,
+				"parent" : 50
+			},
+			{
+				"file" : 12,
+				"parent" : 51
+			},
+			{
+				"command" : 4,
+				"file" : 12,
+				"line" : 169,
+				"parent" : 52
+			},
+			{
+				"file" : 11,
+				"parent" : 53
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 277,
+				"parent" : 54
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 24,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 23,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 31,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 28,
+				"parent" : 14
+			},
+			{
+				"command" : 4,
+				"file" : 2,
+				"line" : 8,
+				"parent" : 6
+			},
+			{
+				"file" : 15,
+				"parent" : 60
+			},
+			{
+				"command" : 3,
+				"file" : 15,
+				"line" : 3,
+				"parent" : 61
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 219,
+				"parent" : 54
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 20,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 19,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 3,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 4,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 7,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 8,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 10,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 21,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 13,
+				"parent" : 14
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 5,
+				"parent" : 14
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 187,
+				"parent" : 54
+			},
+			{
+				"command" : 3,
+				"file" : 4,
+				"line" : 6,
+				"parent" : 14
+			},
+			{
+				"command" : 6,
+				"file" : 11,
+				"line" : 90,
+				"parent" : 54
+			},
+			{
+				"command" : 3,
+				"file" : 0,
+				"line" : 71,
+				"parent" : 0
+			},
+			{
+				"command" : 8,
+				"file" : 0,
+				"line" : 19,
+				"parent" : 0
+			}
+		]
+	},
+	"compileGroups" : 
+	[
+		{
+			"compileCommandFragments" : 
+			[
+				{
+					"fragment" : "  -march=armv7ve -mthumb -mfpu=neon-vfpv4 -mfloat-abi=hard -O3 -DNDEBUG -std=c++20 -fPIC"
+				},
+				{
+					"backtrace" : 77,
+					"fragment" : "-fno-gnu-unique"
+				},
+				{
+					"backtrace" : 77,
+					"fragment" : "-fabi-version=18"
+				},
+				{
+					"backtrace" : 77,
+					"fragment" : "-pthread"
+				}
+			],
+			"defines" : 
+			[
+				{
+					"backtrace" : 77,
+					"define" : "BOOST_PROGRAM_OPTIONS_DYN_LINK"
+				},
+				{
+					"backtrace" : 77,
+					"define" : "BOOST_PROGRAM_OPTIONS_NO_LIB"
+				},
+				{
+					"backtrace" : 77,
+					"define" : "BOOST_REGEX_DYN_LINK"
+				},
+				{
+					"backtrace" : 77,
+					"define" : "BOOST_REGEX_NO_LIB"
+				},
+				{
+					"backtrace" : 77,
+					"define" : "FMT_SHARED"
+				},
+				{
+					"define" : "TriggerRetain_EXPORTS"
+				}
+			],
+			"includes" : 
+			[
+				{
+					"backtrace" : 78,
+					"path" : "C:/GIT/TriggerRetain/TriggerRetain/intermediate/code"
+				},
+				{
+					"backtrace" : 78,
+					"path" : "C:/GIT/TriggerRetain/TriggerRetain/src"
+				},
+				{
+					"backtrace" : 77,
+					"isSystem" : true,
+					"path" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/include/plcnext"
+				}
+			],
+			"language" : "CXX",
+			"languageStandard" : 
+			{
+				"backtraces" : 
+				[
+					77,
+					77
+				],
+				"standard" : "20"
+			},
+			"sourceIndexes" : 
+			[
+				3,
+				4,
+				5
+			],
+			"sysroot" : 
+			{
+				"path" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi"
+			}
+		}
+	],
+	"id" : "TriggerRetain::@6890427a1f51a3e7e1df",
+	"install" : 
+	{
+		"destinations" : 
+		[
+			{
+				"backtrace" : 2,
+				"path" : "IC9226M-FSOE_26.6.1.214942/Release/lib"
+			},
+			{
+				"backtrace" : 2,
+				"path" : "IC9226M-FSOE_26.6.1.214942/Release/lib"
+			}
+		],
+		"prefix" : 
+		{
+			"path" : "C:/Program Files (x86)/TriggerRetain"
+		}
+	},
+	"link" : 
+	{
+		"commandFragments" : 
+		[
+			{
+				"fragment" : "",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 3,
+				"fragment" : "-Wl,--no-undefined",
+				"role" : "flags"
+			},
+			{
+				"backtrace" : 4,
+				"fragment" : "-Wl,-rpath,$$ORIGIN",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 9,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.AnsiC.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 12,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Services.AppManager.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 15,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Rsc.Client.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 16,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Device.Interface.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 17,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Commons.Services.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 18,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Lm.Services.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 19,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.ModuleLib.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 20,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Module.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 21,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Security.Services.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 22,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Services.NotificationLogger.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 25,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Services.DataLogger.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 28,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Services.FMK.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 29,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.FileIntegrity.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 32,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Io.EtherCAT.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 35,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Retain.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 36,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Gds.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 37,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Domain.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 38,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Meta.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 41,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Io.ProfinetStack.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 42,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Hardware.Nim.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 45,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Io.SliceBus.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 46,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 55,
+				"fragment" : "-lrt",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 56,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Um.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 57,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Um.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 58,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Meta.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 59,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Plc.Domain.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 62,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Services.TraceController.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 63,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Acf.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 64,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.NmPayload.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 65,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Nm.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 66,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Acf.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 67,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Acf.Commons.BuildInfo.a",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 68,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.JRsc.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 69,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Rsc.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 70,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Rsc.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 71,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Security.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 72,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.System.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 73,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Commons.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 74,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libboost_program_options.so.1.84.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 75,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libArp.Base.Core.so",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 76,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libboost_regex.so.1.84.0",
+				"role" : "libraries"
+			},
+			{
+				"backtrace" : 76,
+				"fragment" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi/usr/lib/libfmt.so.10.2.1",
+				"role" : "libraries"
+			}
+		],
+		"language" : "CXX",
+		"sysroot" : 
+		{
+			"path" : "C:/YASKAWA_SDKs/2026.6/sysroots/armv7vet2hf-neon-vfpv4-yaskawa-linux-gnueabi"
+		}
+	},
+	"name" : "TriggerRetain",
+	"nameOnDisk" : "libTriggerRetain.so",
+	"paths" : 
+	{
+		"build" : ".",
+		"source" : "."
+	},
+	"sourceGroups" : 
+	[
+		{
+			"name" : "Header Files",
+			"sourceIndexes" : 
+			[
+				0,
+				1,
+				2
+			]
+		},
+		{
+			"name" : "Source Files",
+			"sourceIndexes" : 
+			[
+				3,
+				4,
+				5
+			]
+		}
+	],
+	"sources" : 
+	[
+		{
+			"backtrace" : 1,
+			"path" : "intermediate/code/TriggerRetainLibrary.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/TriggerRetainComponent.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"path" : "src/TriggerRetainLibraryInfo.hpp",
+			"sourceGroupIndex" : 0
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "intermediate/code/TriggerRetainLibrary.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "intermediate/code/TriggerRetainLibrary.meta.cpp",
+			"sourceGroupIndex" : 1
+		},
+		{
+			"backtrace" : 1,
+			"compileGroupIndex" : 0,
+			"path" : "src/TriggerRetainComponent.cpp",
+			"sourceGroupIndex" : 1
+		}
+	],
+	"type" : "SHARED_LIBRARY"
+}

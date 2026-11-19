@@ -1,0 +1,17 @@
+version: '2.4'
+services:
+  axis-control:
+    image: axis-control-panel:latest
+    restart: unless-stopped
+    network_mode: host # Use the PLC network to expose port 8080 directly
+    privileged: true   # REQUIRED: allows the container to execute sudo/systemctl commands on the PLC
+    volumes:
+      # Map the gRPC socket
+      - /run/plcnext:/run/plcnext
+      # Map the PLC projects to allow parallel project switching
+      - /opt/plcnext/projects:/opt/plcnext/projects
+      # Map the logs
+      - /opt/plcnext/logs:/opt/plcnext/logs
+      # Map the system commands to allow restarting the plcnext daemon
+      - /etc/init.d:/etc/init.d
+      - /opt/plcnext/user:/opt/plcnext/user

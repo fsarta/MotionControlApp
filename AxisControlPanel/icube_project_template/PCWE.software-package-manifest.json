@@ -1,0 +1,25 @@
+{
+  "manifestVersion": "1.0",
+  "identification": {
+    "name": "AxisControlPanel",
+    "manufacturer": "Yaskawa",
+    "manufacturerUri": "",
+    "productCode": "PLCnext Engineer project",
+    "model": "PLCnext Engineer project",
+    "softwareRevision": "1795076037886504800",
+    "releaseDate": "2026-11-19T08:13:57.8865048Z",
+    "description": "",
+    "targetProductCodes": [
+      "JEYRM-MPX022SE10L32-2"
+    ],
+    "targetFirmwareRevision": "2026.6.0",
+    "applicationRevision": "",
+    "applicationProductVersion": ""
+  },
+  "updateBehavior": [
+    "KeepsParameters",
+    "WillDisconnect",
+    "NeedsPreparation"
+  ],
+  "tags": {}
+}

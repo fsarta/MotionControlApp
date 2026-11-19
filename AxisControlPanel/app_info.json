@@ -1,0 +1,44 @@
+{
+  "plcnextapp": {
+    "name": "Axis Control Panel",
+    "identifier": "20000000000004",
+    "version": "0.1.0",
+    "target": "iC9226M-EC,iC9226M-FSoE",
+    "minfirmware_version": "26.6.0",
+    "manufacturer": "Yaskawa Italia Srl - F. Sarta",
+    "licensetype": "Free"
+  },
+  "datastorage": {
+    "persistentdata": true,
+    "temporarydata": true,
+    "directoriesToCreate": {
+      "persistent": [
+        {
+          "path": "logs"
+        }
+      ],
+      "temporary": []
+    }
+  },
+  "ocicontainer": {
+    "environmentVariables": [
+      {
+        "name": "PORT",
+        "value": "8080"
+      }
+    ],
+    "quadletFiles": [
+      {
+        "type": "Main",
+        "path": "axis-control.container"
+      }
+    ],
+    "images": [
+      {
+        "name": "axis-control-panel",
+        "id": "acf594cc3ecd023d1fe7c742d2c35a44529c8be857a8beaae704d23bc711ad29",
+        "path": "images/axis-control-panel.tar.gz"
+      }
+    ]
+  }
+}
