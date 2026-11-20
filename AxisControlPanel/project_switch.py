@@ -401,6 +401,21 @@ def reboot_system():
 # verifica del progetto prima di toccare il symlink
 # --------------------------------------------------------------------------- #
 
+# Parti del progetto che dipendono dall'HARDWARE (assi, fieldbus, motion kernel)
+# e che devono venire dal progetto utente, non dal template: senza di loro il
+# progetto parte ma i task vanno in watchdog.
+HARDWARE_PROFILE_PATHS = (
+    'Io',                              # tutti i master/fieldbus: Ecat, MotionAxes, SliceBus, PnC
+    'Services/FMK',                    # Motion Kernel
+    'Plc/DriveParam',
+    'Plc/DefaultDriveParam',
+    'Plc/MC/startup/axis.xml',
+    'Plc/MC/startup/servonet.xml',
+    'Plc/MC/startup/group.xml',
+    # Plc/Esm/PCWE.esm.config NON si tocca: i tempi dei task sono una scelta di
+    # progetto (real-time della macchina) e non vengono modificati da qui.
+)
+
 REQUIRED_ENTRIES = [
     'PCWE.manifest.config',
     'Plc/Domain',
@@ -743,15 +758,25 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
             shutil.rmtree(staging, ignore_errors=True)
             run('cp -a "%s" "%s"' % (template_dir, staging), check=True, timeout=600)
 
-        # 2. hardware/config dal progetto utente
-        if os.path.isdir(os.path.join(source, 'Io', 'Arp.Io.Ecat')):
-            os.makedirs(os.path.join(staging, 'Io'), exist_ok=True)
-            run('cp -a "%s" "%s"' % (os.path.join(source, 'Io', 'Arp.Io.Ecat'),
-                                     os.path.join(staging, 'Io')), check=True)
-        for rel in ('Plc/MC/startup/axis.xml', 'Plc/MC/startup/servonet.xml'):
+        # 2. profilo hardware/config dal progetto utente.
+        #
+        # NON basta piu' copiare solo Io/Arp.Io.Ecat + axis.xml: il GDS del
+        # template referenzia Arp.Services.FMK, Arp.Io.SliceBus, Arp.Io.MotionAxes
+        # e le drive param, che nel template NON esistono. Con i connettori a
+        # vuoto i task sforano il watchdog:
+        #   "Watchdog of task 'FastTask' triggered (watchdog 8000000us / 13400us)"
+        #   -> PlcState Stop|Error -> WBM 502.
+        # Si sincronizza quindi l'intero profilo I/O e motion del progetto utente.
+        for rel in HARDWARE_PROFILE_PATHS:
             src = os.path.join(source, rel)
-            if os.path.exists(src):
-                run('cp -a "%s" "%s"' % (src, os.path.join(staging, rel)), check=True)
+            dst = os.path.join(staging, rel)
+            if not os.path.exists(src):
+                logger.warning('profilo hardware: %s assente nel progetto utente, salto', rel)
+                continue
+            os.makedirs(os.path.dirname(dst), exist_ok=True)
+            run('cp -a "%s" "%s"' % (src, os.path.dirname(dst) + '/'), check=True)
+            logger.info('profilo hardware: copiato %s',
+                        os.path.basename(src) or rel)
 
         # 3. TriggerRetain dentro il progetto: NON si tocca.
         #    Vive in <progetto>/Libs/TriggerRetain/ ed e' referenziato anche da
