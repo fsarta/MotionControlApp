@@ -412,8 +412,8 @@ HARDWARE_PROFILE_PATHS = (
     'Plc/MC/startup/axis.xml',
     'Plc/MC/startup/servonet.xml',
     'Plc/MC/startup/group.xml',
-    # Plc/Esm/PCWE.esm.config NON si copia: i task del progetto app hanno
-    # bisogno dei propri tempi (il template e' gia' riallineato a PCWE nel repo).
+    # Plc/Esm/PCWE.esm.config NON si tocca: i tempi dei task sono una scelta di
+    # progetto (real-time della macchina) e non vengono modificati da qui.
 )
 
 REQUIRED_ENTRIES = [
