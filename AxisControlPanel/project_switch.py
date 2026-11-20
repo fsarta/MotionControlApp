@@ -163,12 +163,54 @@ def runtime_restarted_after(ts):
         return None
 
 
-def wait_for_runtime_applied(timeout=90):
+def _service_active_seconds():
     """
-    Dopo aver chiesto il reboot si resta vivi finche' possibile: se il reboot e'
-    andato a buon fine il processo muore prima, quindi qui si arriva solo quando
-    il riavvio NON e' stato applicato (tipico: nessun permesso). In quel caso si
-    fa il restart del solo runtime, che e' il rimedio documentato.
+    Da quanti secondi il servizio plcnext e' attivo. Al boot e' ~0, quindi e' il
+    modo piu' affidabile di sapere se il riavvio e' avvenuto davvero.
+    """
+    res = run("systemctl show -p ActiveEnterTimestampMonotonic --value plcnext",
+              timeout=10)
+    if res is not None and res.returncode == 0 and res.stdout.strip():
+        try:
+            start_us = int(res.stdout.strip())  # microsecondi da boot
+        except ValueError:
+            start_us = None
+        if start_us:
+            try:
+                with open('/proc/uptime', 'r', encoding='utf-8') as handle:
+                    uptime = float(handle.read().split()[0])
+                return max(0.0, uptime - start_us / 1_000_000.0)
+            except (OSError, ValueError):
+                pass
+    return None
+
+
+def wait_for_system_back(timeout=240):
+    """
+    Attende che il WBM torni a rispondere (vero indicatore di "firmware pronto":
+    il 502 significa che non lo e'). Ritorna True se e' tornato.
+    """
+    import urllib.request
+    started = time.time()
+    while time.time() - started < timeout:
+        try:
+            with urllib.request.urlopen('http://127.0.0.1/wbm/', timeout=5) as resp:
+                if resp.status < 500:
+                    logger.info('WBM raggiungibile dopo %ds', int(time.time() - started))
+                    return True
+        except Exception:
+            pass
+        time.sleep(5)
+    logger.error('WBM non raggiungibile dopo %ds', timeout)
+    return False
+
+
+def wait_for_runtime_applied(timeout=120):
+    """
+    Da chiamare SOLO se il processo e' ancora vivo dopo un reboot richiesto.
+    Significa che il riavvio NON e' stato applicato (tipico: permessi mancanti).
+    In quel caso si fa il restart del solo runtime e si verifica che il servizio
+    sia ripartito dopo la richiesta.
     """
     started = int(time.time())
     while time.time() - started < timeout:
@@ -178,18 +220,16 @@ def wait_for_runtime_applied(timeout=90):
         applied = runtime_restarted_after(started - 5)
         if applied:
             logger.info('runtime riavviato: nuovo progetto applicato')
-            write_state('done', discover_user_project(), step='runtime-restarted')
             return True
         time.sleep(3)
+
     logger.error('il riavvio non e\' stato applicato: forzo il restart del runtime')
     cmd = runtime_restart_command()
-    if cmd and run('sudo -n ' + cmd, timeout=180) is not None:
-        time.sleep(20)
+    if cmd:
+        run('sudo -n ' + cmd, timeout=180)
+        time.sleep(25)
         if runtime_active():
-            write_state('done', current_target(), step='runtime-restart-fallback')
             return True
-    write_state('failed', current_target(), step='reboot',
-                error='riavvio non applicato e restart runtime fallito')
     return False
 
 
@@ -296,37 +336,81 @@ REQUIRED_ENTRIES = [
 ]
 
 
+# Sottocartelle del progetto che NON fanno parte della catena di include ACF:
+#   Libs/TriggerRetain/  -> residuo del template, non incluso (lo include il
+#                           Default.acf.config di sistema, non quello del progetto)
+#   Libs/PLCnextBase*    -> portate dal firmware / da PLCnextBase, non dal progetto
+ACF_SCAN_EXCLUDE = (
+    os.path.join('Libs', 'TriggerRetain'),
+    os.path.join('Libs', 'PLCnextBase'),
+    os.path.join('Libs', 'PLCnextBaseServices'),
+)
+
+
+def _expand_arp(path_token):
+    """Espande le variabili usate nei config PLCnext (dentro il container)."""
+    token = path_token
+    token = token.replace('$ARP_PROJECTS_DIR$', '/opt/plcnext/projects')
+    token = token.replace('$ARP_PATH_PROJECT_DEFAULT_DIR$',
+                          '/opt/plcnext/projects/Default')
+    token = token.replace('$ARP_PATH_PROJECT_CURRENT_DIR$', current_target())
+    return token
+
+
 def verify_project_tree(path):
-    """Controlli minimi: il progetto e' completo e i file ACF puntano a file veri."""
-    problems = []
+    """
+    Verifica il progetto che sta per essere attivato.
+
+    Ritorna (bloccanti, avvisi):
+      - bloccanti: impediscono lo switch (progetto incompleto o libreria che il
+        firmware cercherebbe e non troverebbe);
+      - avvisi: annotati nel log ma NON bloccano (config fuori dal percorso di
+        include, oppure path che non si possono verificare dal container).
+    """
+    blocking = []
+    warnings = []
     if not os.path.isdir(path):
-        return ['la cartella progetto non esiste: %s' % path]
+        return ['la cartella progetto non esiste: %s' % path], warnings
 
     for rel in REQUIRED_ENTRIES:
         if not os.path.exists(os.path.join(path, rel)):
-            problems.append('manca %s' % rel)
+            blocking.append('manca %s' % rel)
 
-    # ogni binaryPath dichiarato in un *.acf.config deve esistere davvero
+    if not os.path.exists(os.path.join(path, 'Plc', 'Eclr', 'eCLR.img')):
+        blocking.append('manca Plc/Eclr/eCLR.img (programma PLC assente)')
+
+    excluded = tuple(os.path.normpath(os.path.join(path, rel))
+                     for rel in ACF_SCAN_EXCLUDE)
+
     for root, _dirs, files in os.walk(path):
+        if os.path.normpath(root).startswith(excluded):
+            continue
         for name in files:
             if not name.endswith('.acf.config'):
                 continue
             cfg = os.path.join(root, name)
+            rel_cfg = os.path.relpath(cfg, path)
             try:
                 with open(cfg, 'r', encoding='utf-8', errors='replace') as handle:
                     text = handle.read()
             except OSError as exc:
-                problems.append('illeggibile %s (%s)' % (cfg, exc))
+                warnings.append('illeggibile %s (%s)' % (rel_cfg, exc))
                 continue
+
             for token in _binary_paths(text):
+                if token.startswith('$ARP_') or token.startswith('/'):
+                    resolved = _expand_arp(token)
+                    # l'esterno del container (host) non e' verificabile da qui
+                    if not os.path.exists(resolved):
+                        warnings.append('%s: %s non verificabile dal container '
+                                        '(o inesistente)' % (rel_cfg, token))
+                    continue
                 binary = os.path.normpath(os.path.join(root, token))
                 if not os.path.exists(binary):
-                    problems.append('%s punta a %s che non esiste'
-                                    % (os.path.relpath(cfg, path), token))
+                    blocking.append('%s punta a %s che non esiste'
+                                    % (rel_cfg, token))
 
-    if not os.path.exists(os.path.join(path, 'Plc', 'Eclr', 'eCLR.img')):
-        problems.append('manca Plc/Eclr/eCLR.img (programma PLC assente)')
-    return problems
+    return blocking, warnings
 
 
 def _binary_paths(xml_text):
@@ -462,15 +546,15 @@ def verify_acf_component():
         if os.path.exists(path) and not os.access(path, os.R_OK):
             problems.append('%s non leggibile' % path)
 
-    # la directory TriggerRetain non deve contenere altri *.acf.config non voluti
+    # l'include deve puntare a una cartella che contiene davvero la libreria
+    include_path = os.path.join(DEFAULT_DIR, 'TriggerRetain.acf.config')
     try:
-        extra = [name for name in os.listdir(ACF_INCLUDE_DIR)
-                 if name.endswith('.acf.config')
-                 and name != 'TriggerRetainLibrary.acf.config']
-        if extra:
-            problems.append('acf.config inattesi in %s: %s' % (ACF_INCLUDE_DIR, extra))
-    except OSError:
-        pass
+        with open(include_path, 'r', encoding='utf-8', errors='replace') as handle:
+            text = handle.read()
+        if 'TriggerRetain' not in text:
+            problems.append('%s non include TriggerRetain' % include_path)
+    except OSError as exc:
+        problems.append('illeggibile %s (%s)' % (include_path, exc))
 
     if problems:
         logger.error('verifica componente ACF fallita: %s', '; '.join(problems))
@@ -486,21 +570,72 @@ def verify_acf_component():
 
 def finish_switch(target_project):
     """
-    Chiude lo switch. Se il reboot va a buon fine questo processo muore e non
-    torna piu' (ed e' corretto: il container riparte col nuovo progetto).
-    Se invece resta vivo, il riavvio non e' stato applicato: si fa il restart
-    del solo runtime e si attende che il nuovo progetto sia attivo.
+    Chiude lo switch chiedendo il riavvio.
+
+    Confine del riavvio: subito PRIMA si scrive lo stato, si registra l'istante
+    di boot e si marca un sentinel; subito DOPO si controlla se il sentinel e'
+    sopravvissuto al riavvio (sparisce al boot successivo, perche' sta in /tmp).
+
+      - sentinel sparito  -> il sistema si e' riavviato: si attende il WBM e si
+                             marca "done";
+      - sentinel presente -> il riavvio NON e' stato applicato: si fa il restart
+                             del solo runtime (rimedio documentato) e si verifica.
+
+    In entrambi i casi il container muore e riparte col nuovo progetto.
     """
+    # --- prima del riavvio ---
     write_state('pending', target_project, step='reboot')
     sync_fs()
-    if reboot_system():
-        # il processo dovrebbe morire qui dentro
-        wait_for_runtime_applied()
-        return True, 'reboot richiesto e runtime verificato'
-    logger.warning('reboot non disponibile: uso il restart del solo runtime')
-    if wait_for_runtime_applied(timeout=30):
-        return True, 'riavvio del runtime applicato'
-    return False, 'riavvio non applicato (vedi switch.state)'
+    before_uptime = None
+    try:
+        with open('/proc/uptime', 'r', encoding='utf-8') as handle:
+            before_uptime = float(handle.read().split()[0])
+    except (OSError, ValueError):
+        pass
+    run('rm -f /tmp/axis-control-switch-sentinel')
+    run('touch /tmp/axis-control-switch-sentinel')
+
+    rebooted_request = reboot_system()
+
+    # --- dopo il riavvio (se siamo ancora vivi) ---
+    surfived_sentinel = os.path.exists('/tmp/axis-control-switch-sentinel')
+    after_uptime = None
+    try:
+        with open('/proc/uptime', 'r', encoding='utf-8') as handle:
+            after_uptime = float(handle.read().split()[0])
+    except (OSError, ValueError):
+        pass
+
+    uptime_went_back = (before_uptime is not None and after_uptime is not None
+                        and after_uptime < before_uptime)
+    service_age = _service_active_seconds()
+
+    reboot_happened = (not surfived_sentinel) or uptime_went_back or (
+        service_age is not None and service_age < 300)
+
+    logger.info('finish_switch: reboot richiesto=%s, sentinel_presente=%s, '
+                'uptime_prima=%s dopo=%s, eta_servizio=%s -> riavvio=%s',
+                rebooted_request, surfived_sentinel, before_uptime, after_uptime,
+                service_age, reboot_happened)
+
+    if reboot_happened:
+        ok = wait_for_system_back()
+        write_state('done' if ok else 'failed', target_project,
+                    step='reboot-verified',
+                    error='' if ok else 'WBM non raggiungibile dopo il riavvio')
+        return ok, 'riavvio effettuato' if ok else 'riavvio effettuato ma WBM non risponde'
+
+    # il sistema non si e' riavviato: il progetto non e' ancora attivo
+    logger.warning('reboot NON applicato: uso il restart del solo runtime')
+    if wait_for_runtime_applied():
+        ok = wait_for_system_back(timeout=120)
+        write_state('done' if ok else 'failed', target_project,
+                    step='runtime-restart',
+                    error='' if ok else 'WBM non raggiungibile dopo restart runtime')
+        return ok, 'runtime riavviato' if ok else 'runtime riavviato, WBM non risponde'
+    write_state('failed', target_project, step='reboot',
+                error='riavvio non applicato e restart runtime fallito')
+    return False, 'riavvio non applicato (serve sudo/permessi reboot)'
 
 
 def activate_app_project(app_name, template_dir, trigger_retain_dir,
@@ -520,10 +655,16 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
             shutil.rmtree(staging)
         if not os.path.exists(target):
             run('cp -a "%s" "%s"' % (template_dir, staging), check=True, timeout=600)
-        else:
+        elif shutil.which('rsync'):
             # riallineamento del template (mantiene eventuali dati locali)
             run('rsync -a --delete "%s/" "%s/"' % (template_dir, staging),
                 check=True, timeout=600)
+        else:
+            # rsync NON e' presente nell'immagine python:3.9-slim: si rifa' la
+            # copia da zero. La staging e' sempre ricreabile, quindi va bene.
+            logger.info('rsync assente: ricreo la staging con cp -a')
+            shutil.rmtree(staging, ignore_errors=True)
+            run('cp -a "%s" "%s"' % (template_dir, staging), check=True, timeout=600)
 
         # 2. hardware/config dal progetto utente
         if os.path.isdir(os.path.join(source, 'Io', 'Arp.Io.Ecat')):
@@ -545,11 +686,15 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
         sync_fs()
 
         # 4. VERIFICA prima di toccare il symlink
-        problems = verify_project_tree(staging)
-        if problems:
-            msg = 'progetto non valido: ' + '; '.join(problems)
+        blocking, warn = verify_project_tree(staging)
+        for item in warn:
+            logger.warning('verifica (non bloccante): %s', item)
+        if blocking:
+            msg = 'progetto non valido: ' + '; '.join(blocking)
             logger.error(msg)
             write_state('failed', app_name, step='verify', error=msg)
+            # la staging non si butta: serve per capire, e il prossimo tentativo
+            # la ricrea comunque
             return False, msg
 
         # 5. swap atomico
@@ -590,9 +735,11 @@ def activate_user_project(app_name, user_project=None):
         write_state('failed', user_project, step='verify', error=msg)
         return False, msg
 
-    problems = verify_project_tree(target)
-    if problems:
-        msg = 'progetto utente non valido: ' + '; '.join(problems)
+    blocking, warn = verify_project_tree(target)
+    for item in warn:
+        logger.warning('verifica progetto utente (non bloccante): %s', item)
+    if blocking:
+        msg = 'progetto utente non valido: ' + '; '.join(blocking)
         logger.error(msg)
         write_state('failed', user_project, step='verify', error=msg)
         return False, msg

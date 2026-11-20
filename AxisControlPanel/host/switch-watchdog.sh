@@ -70,15 +70,11 @@ http_ok() {
 }
 
 plc_running() {
-    # 1) backend raggiungibile = firmware pronto (il 502 significa "non pronto")
-    if http_ok; then
-        return 0
-    fi
-    # 2) processo runtime presente
-    if pgrep -f 'Arp.System.Application' >/dev/null 2>&1; then
-        return 0
-    fi
-    return 1
+    # UNICO criterio attendibile: il backend risponde.
+    # NON basta "il processo Arp.System.Application esiste": e' vivo anche
+    # quando il WBM risponde 502 (firmware non arrivato a ready), quindi usarlo
+    # come prova faceva dichiarare "done" un boot fallito.
+    http_ok
 }
 
 # comando di restart del runtime: systemd su FW >= 2022.0, init.d sui piu' vecchi
@@ -94,28 +90,39 @@ runtime_restart() {
     fi
 }
 
+ATTEMPTS_FILE="/tmp/switch-watchdog.attempts"
+
+# 1. firmware gia' su? -> switch completato
 if plc_running; then
     log "firmware OK, switch verso '$TARGET' completato (step era '$STEP')"
+    rm -f "$ATTEMPTS_FILE"
     sed -i 's/"phase"[[:space:]]*:[[:space:]]*"pending"/"phase": "done"/' "$STATE" || true
     exit 0
 fi
 
+# 2. il container non ha ancora chiesto il reboot? non c'e' nulla da attendere
+if [ "$STEP" != "reboot" ]; then
+    log "switch fermo in step '$STEP' (nessun riavvio atteso): non intervengo"
+    exit 0
+fi
+
+# 3. ancora dentro la finestra di boot? aspetta
 if [ -n "$DEADLINE" ] && [ "$NOW" -lt "$DEADLINE" ] 2>/dev/null; then
-    exit 0   # ancora dentro la finestra di boot: non intervenire
-fi
-
-log "BOOT NON COMPLETATO per '$TARGET' (step '$STEP', deadline $DEADLINE): tentativo 1 = restart runtime"
-runtime_restart >>"$LOG" 2>&1
-
-sleep 45
-
-if plc_running; then
-    log "recuperato con restart del runtime PLCnext"
-    sed -i 's/"phase"[[:space:]]*:[[:space:]]*"pending"/"phase": "done"/' "$STATE" || true
     exit 0
 fi
 
-log "restart firmware insufficiente: tentativo 2 = reboot del sistema"
+# 4. deadline passata: tentativo 1 = restart del runtime, tentativo 2 = reboot
+ATTEMPTS=$(cat "$ATTEMPTS_FILE" 2>/dev/null || echo 0)
+
+if [ "$ATTEMPTS" -lt 1 ]; then
+    echo 1 > "$ATTEMPTS_FILE"
+    log "BOOT NON COMPLETATO per '$TARGET' (deadline $DEADLINE): tentativo 1 = restart runtime"
+    runtime_restart >>"$LOG" 2>&1
+    exit 0
+fi
+
+log "restart del runtime insufficiente: tentativo 2 = reboot del sistema"
+rm -f "$ATTEMPTS_FILE"
 sync
 /sbin/reboot -f >>"$LOG" 2>&1
 exit 0
