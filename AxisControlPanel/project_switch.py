@@ -21,9 +21,11 @@ Regole implementate qui:
 Il container muore col reboot: la parte "post-riavvio" NON puo' stare qui.
 """
 
+import hashlib
 import json
 import logging
 import os
+import re
 import shutil
 import subprocess
 import time
@@ -466,6 +468,12 @@ def verify_project_tree(path):
     if not os.path.exists(os.path.join(path, 'Plc', 'Eclr', 'eCLR.img')):
         blocking.append('manca Plc/Eclr/eCLR.img (programma PLC assente)')
 
+    # gli hash del manifest sono l'unica verifica che il firmware fa davvero:
+    # se non tornano, il progetto non viene applicato e resta quello precedente
+    m_blocking, m_warnings = verify_project_manifest(path)
+    blocking.extend(m_blocking)
+    warnings.extend(m_warnings)
+
     excluded = tuple(os.path.normpath(os.path.join(path, rel))
                      for rel in ACF_SCAN_EXCLUDE)
 
@@ -497,6 +505,73 @@ def verify_project_tree(path):
                     blocking.append('%s punta a %s che non esiste'
                                     % (rel_cfg, token))
 
+    return blocking, warnings
+
+
+
+def verify_project_manifest(path):
+    """
+    Verifica il manifest del progetto (PCWE.manifest.config).
+
+    Il firmware PLCnext valida il progetto confrontando lo SHA512 di ogni file
+    con quello scritto nel manifest: se un solo hash non torna, il progetto non
+    viene applicato e /opt/plcnext/projects/current resta sul progetto
+    precedente ("non carica il progetto template, resta quello utente").
+
+    Caso reale trovato: 33 file su 52 normalizzati a LF mentre il manifest era
+    stato generato con CRLF -> manifest invalido.
+
+    Ritorna (bloccanti, avvisi).
+    """
+    blocking = []
+    warnings = []
+    manifest = os.path.join(path, 'PCWE.manifest.config')
+    if not os.path.exists(manifest):
+        warnings.append('PCWE.manifest.config assente: impossibile validare '
+                        'gli hash del progetto')
+        return blocking, warnings
+    try:
+        with open(manifest, 'r', encoding='utf-8', errors='replace') as handle:
+            text = handle.read()
+    except OSError as exc:
+        warnings.append('manifest illeggibile: %s' % exc)
+        return blocking, warnings
+
+    entries = re.findall(r'<File\s+path="([^"]+)"\s+hash="([0-9a-fA-F]+)"', text)
+    if not entries:
+        warnings.append('manifest senza elenco file: nessuna verifica possibile')
+        return blocking, warnings
+
+    mismatched = []
+    for rel, expected in entries:
+        full = os.path.join(path, *rel.split('/'))
+        if not os.path.exists(full):
+            blocking.append('manifest cita %s, assente nel progetto' % rel)
+            continue
+        try:
+            with open(full, 'rb') as handle:
+                actual = hashlib.sha512(handle.read()).hexdigest()
+        except OSError as exc:
+            warnings.append('hash non calcolabile per %s (%s)' % (rel, exc))
+            continue
+        if actual.lower() != expected.lower():
+            mismatched.append(rel)
+
+    if mismatched:
+        blocking.append(
+            'manifest non valido: %d file su %d hanno hash diverso da quello '
+            'atteso (%s%s). Il firmware rifiutera' % (
+                len(mismatched), len(entries), ', '.join(mismatched[:5]),
+                ', ...' if len(mismatched) > 5 else '') +
+            ' il progetto: quasi sempre sono stati riscritti con fine riga '
+            'LF invece di CRLF.')
+
+    overall = re.search(r'overallHash="([0-9a-fA-F]+)"', text)
+    if overall:
+        joined = ''.join(h for _p, h in entries).encode('ascii')
+        if hashlib.sha512(joined).hexdigest().lower() != overall.group(1).lower():
+            blocking.append('overallHash del manifest non coerente con gli hash '
+                            'dei singoli file')
     return blocking, warnings
 
 
