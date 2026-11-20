@@ -38,6 +38,10 @@ run 'cat /opt/plcnext/projects/Default/PLCnextBase.acf.config'
 sec "4. acf.config alla RADICE dei progetti (include \$ARP_PATH_PROJECT_CURRENT_DIR\$/*.acf.config)"
 run 'for d in /opt/plcnext/projects/*/; do echo "--- $d"; ls -la "$d"*.acf.config 2>/dev/null; done'
 
+sec "4b. staging rimasta da uno switch fallito (va rimossa)"
+run 'ls -la /opt/plcnext/projects/*.staging 2>/dev/null || echo "nessuna staging"'
+run 'du -sh /opt/plcnext/projects/*.staging 2>/dev/null'
+
 sec "5. dove compare TriggerRetain"
 run 'grep -rl "TriggerRetain" /etc/plcnext /opt/plcnext/projects 2>/dev/null'
 
