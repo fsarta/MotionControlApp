@@ -942,6 +942,9 @@ if __name__ == '__main__':
     
     # 1. Check current project state (do NOT auto-switch anymore)
     check_project_state()
+    # 1b. Se c'e' uno switch in corso, questo e' il boot che lo completa:
+    #     verifica che il progetto richiesto sia davvero quello attivo.
+    project_switch.verify_boot_after_switch()
     logger.info(f"Initial project state: {project_state}")
     
     # 2. Componente ACF: registrazione UNICA e sempre presente.
