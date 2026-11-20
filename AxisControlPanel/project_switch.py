@@ -406,16 +406,17 @@ def reboot_system():
 # Parti del progetto che dipendono dall'HARDWARE (assi, fieldbus, motion kernel)
 # e che devono venire dal progetto utente, non dal template: senza di loro il
 # progetto parte ma i task vanno in watchdog.
+# Componenti che il GDS del template referenzia e che NON sono elencati nel suo
+# manifest: devono esistere come componenti di SISTEMA (firmware). Non si
+# copiano mai dal progetto utente: il template resta esattamente quello di
+# iCube Engineer.
 HARDWARE_PROFILE_PATHS = (
-    'Io',                              # tutti i master/fieldbus: Ecat, MotionAxes, SliceBus, PnC
-    'Services/FMK',                    # Motion Kernel
-    'Plc/DriveParam',
+    'Services/FMK',                    # Motion Kernel (sistema)
+    'Io/Arp.Io.Ecat',                  # EtherCAT master (sistema)
+    'Io/Arp.Io.MotionAxes',            # assi di motion (sistema)
+    'Io/Arp.Io.SliceBus',              # SliceBus (sistema)
+    'Plc/DriveParam',                  # parametri drive (sistema)
     'Plc/DefaultDriveParam',
-    'Plc/MC/startup/axis.xml',
-    'Plc/MC/startup/servonet.xml',
-    'Plc/MC/startup/group.xml',
-    # Plc/Esm/PCWE.esm.config NON si tocca: i tempi dei task sono una scelta di
-    # progetto (real-time della macchina) e non vengono modificati da qui.
 )
 
 REQUIRED_ENTRIES = [
@@ -810,7 +811,6 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
     """utente -> template. Ritorna (ok, messaggio)."""
     target = os.path.join(PROJECTS_DIR, app_name)
     user_project = user_project or discover_user_project()
-    source = os.path.join(PROJECTS_DIR, user_project)
 
     write_state('pending', app_name, step='prepare')
     report_switch_marker()
@@ -842,16 +842,21 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
         #   "Watchdog of task 'FastTask' triggered (watchdog 8000000us / 13400us)"
         #   -> PlcState Stop|Error -> WBM 502.
         # Si sincronizza quindi l'intero profilo I/O e motion del progetto utente.
+        # DISATTIVATO: non si copia NULLA dal progetto utente dentro il template.
+        #
+        # Motivo (verificato): il progetto template e' generato da iCube Engineer
+        # e ha un PCWE.manifest.config con lo SHA512 di ogni file. Copiare
+        # Io/** e Plc/MC/startup/*.xml dal progetto utente sovrascrive 8 file
+        # elencati nel manifest (Io/Arp.Io.PnC/*, Io/_s49PNIO/PNIODEV.bin,
+        # Plc/MC/startup/{axis,group,servonet}.xml) e rende il progetto un
+        # ibrido iCube+PCWE: gli hash non tornano piu'.
+        #
+        # I componenti che il GDS referenzia ma che il manifest non elenca
+        # (Arp.Services.FMK, Arp.Io.SliceBus, Arp.Io.Ecat, Arp.Io.MotionAxes)
+        # sono componenti di SISTEMA, forniti dal firmware, non dal progetto.
         for rel in HARDWARE_PROFILE_PATHS:
-            src = os.path.join(source, rel)
-            dst = os.path.join(staging, rel)
-            if not os.path.exists(src):
-                logger.warning('profilo hardware: %s assente nel progetto utente, salto', rel)
-                continue
-            os.makedirs(os.path.dirname(dst), exist_ok=True)
-            run('cp -a "%s" "%s"' % (src, os.path.dirname(dst) + '/'), check=True)
-            logger.info('profilo hardware: copiato %s',
-                        os.path.basename(src) or rel)
+            logger.info('profilo hardware: %s NON copiato dal progetto utente '
+                        '(il template resta quello di iCube)', rel)
 
         # 3. TriggerRetain dentro il progetto: NON si tocca.
         #    Vive in <progetto>/Libs/TriggerRetain/ ed e' referenziato anche da
