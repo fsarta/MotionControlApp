@@ -1,2 +1,10 @@
 *.sh text eol=lf
 *.py text eol=lf
+
+# Il progetto PLCnext e' verificato dal firmware tramite PCWE.manifest.config,
+# che contiene lo SHA512 di OGNI file: la conversione LF/CRLF cambia gli hash e
+# il firmware rifiuta il progetto (oppure lo carica a meta'), lasciando
+# /opt/plcnext/projects/current sul progetto utente.
+# Questi file devono essere trattati come binari: mai normalizzare gli EOL.
+AxisControlPanel/icube_project_template/** -text
+AxisControlPanel/TriggerRetain/**              -text
