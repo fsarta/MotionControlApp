@@ -185,6 +185,20 @@ def _service_active_seconds():
     return None
 
 
+def host_wbm_ok():
+    """Il WBM risponde sull'host? (aggira eventuali limiti del container)."""
+    import urllib.request
+    for url in ('http://127.0.0.1/wbm/', 'http://localhost/wbm/'):
+        try:
+            with urllib.request.urlopen(url, timeout=5) as resp:
+                if resp.status < 500:
+                    return True
+        except Exception:
+            continue
+    res = run('curl -sf -m 5 -o /dev/null http://127.0.0.1/wbm/', timeout=15)
+    return bool(res is not None and res.returncode == 0)
+
+
 def wait_for_system_back(timeout=240):
     """
     Attende che il WBM torni a rispondere (vero indicatore di "firmware pronto":
@@ -233,6 +247,55 @@ def wait_for_runtime_applied(timeout=120):
     return False
 
 
+def verify_boot_after_switch():
+    """
+    Da chiamare all'avvio dell'app (che gira DOPO il riavvio richiesto dallo
+    switch). Confronta il progetto attivo con quello richiesto e scrive l'esito
+    reale in switch.state: e' l'unico punto in cui si sa per certo se il nuovo
+    progetto e' stato caricato o se il controller e' rimasto su quello vecchio.
+    """
+    try:
+        with open(STATE_PATH, 'r', encoding='utf-8') as handle:
+            state = json.load(handle)
+    except (OSError, ValueError):
+        return None
+
+    if state.get('phase') not in ('pending', 'failed'):
+        return None
+    if state.get('step') != 'reboot':
+        return None
+
+    wanted = state.get('target_project') or ''
+    actual = os.path.realpath(CURRENT_LINK)
+    loaded = bool(wanted) and actual == os.path.realpath(
+        os.path.join(PROJECTS_DIR, wanted))
+
+    state['verified_at'] = time.strftime('%Y-%m-%dT%H:%M:%S')
+    state['actual_project'] = actual
+    if loaded:
+        state['phase'] = 'done'
+        state['step'] = 'boot-verified'
+        state['error'] = ''
+        logger.info('switch verificato: il progetto attivo e\' %s', wanted)
+    else:
+        state['phase'] = 'failed'
+        state['step'] = 'boot-verified'
+        state['error'] = ('progetto richiesto %s ma current punta a %s'
+                          % (wanted, actual))
+        logger.error('switch NON riuscito: richiesto %s, attivo %s', wanted, actual)
+    try:
+        tmp = STATE_PATH + '.tmp'
+        with open(tmp, 'w', encoding='utf-8') as handle:
+            json.dump(state, handle, indent=2)
+            handle.flush()
+            os.fsync(handle.fileno())
+        os.replace(tmp, STATE_PATH)
+        sync_fs()
+    except OSError as exc:
+        logger.error('impossibile aggiornare switch.state: %s', exc)
+    return state
+
+
 def write_state(phase, target_project, step='', error=''):
     state = {
         'phase': phase,                # idle | pending | done | failed
@@ -258,17 +321,26 @@ def write_state(phase, target_project, step='', error=''):
         logger.error('impossibile scrivere %s: %s', STATE_PATH, exc)
 
 
-def clear_switch_marker():
-    """Rimuove i marker di retain ereditati, cosi' un boot non consuma trigger
-    scritti da un tentativo precedente (era la causa del `restore` inerte)."""
-    for name in ('BackupAction.txt',):
-        path = os.path.join(USER_DIR, name)
+def report_switch_marker():
+    """
+    Il marker /opt/plcnext/user/BackupAction.txt NON si cancella da qui.
+
+    Chi lo scrive e' il componente ACF TriggerRetain all'avvio del firmware e
+    chi lo consuma e' il componente stesso al boot successivo: se il container
+    lo cancella mentre lo switch e' in corso, il trigger `backup`/`restore`
+    viene perso (era la causa del `restore` inerte). Qui si registra soltanto,
+    per poterlo correlare con il boot.
+    """
+    path = os.path.join(USER_DIR, 'BackupAction.txt')
+    try:
         if os.path.exists(path):
-            try:
-                os.remove(path)
-                logger.info('rimosso marker %s', path)
-            except OSError as exc:
-                logger.error('impossibile rimuovere %s: %s', path, exc)
+            with open(path, 'r', encoding='utf-8', errors='replace') as handle:
+                logger.info('BackupAction.txt presente all\'inizio dello switch: %r',
+                            handle.read().strip())
+        else:
+            logger.info('BackupAction.txt assente all\'inizio dello switch')
+    except OSError as exc:
+        logger.warning('BackupAction.txt illeggibile: %s', exc)
 
 
 # --------------------------------------------------------------------------- #
@@ -592,7 +664,10 @@ def finish_switch(target_project):
             before_uptime = float(handle.read().split()[0])
     except (OSError, ValueError):
         pass
-    run('rm -f /tmp/axis-control-switch-sentinel')
+    # sentinel: se il sistema si riavvia sparisce (limite: NON e' persistente,
+    # quindi non e' una prova definitiva: la prova vera e' l'uptime che torna
+    # indietro o il servizio plcnext "giovane")
+    run('rm -f /tmp/axis-control-switch-sentinel /var/tmp/axis-control-switch-sentinel')
     run('touch /tmp/axis-control-switch-sentinel')
 
     rebooted_request = reboot_system()
@@ -619,7 +694,9 @@ def finish_switch(target_project):
                 service_age, reboot_happened)
 
     if reboot_happened:
-        ok = wait_for_system_back()
+        # il container puo' ripartire prima del runtime: si concede tempo
+        time.sleep(10)
+        ok = wait_for_system_back() or host_wbm_ok()
         write_state('done' if ok else 'failed', target_project,
                     step='reboot-verified',
                     error='' if ok else 'WBM non raggiungibile dopo il riavvio')
@@ -628,7 +705,7 @@ def finish_switch(target_project):
     # il sistema non si e' riavviato: il progetto non e' ancora attivo
     logger.warning('reboot NON applicato: uso il restart del solo runtime')
     if wait_for_runtime_applied():
-        ok = wait_for_system_back(timeout=120)
+        ok = wait_for_system_back(timeout=120) or host_wbm_ok()
         write_state('done' if ok else 'failed', target_project,
                     step='runtime-restart',
                     error='' if ok else 'WBM non raggiungibile dopo restart runtime')
@@ -646,7 +723,7 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
     source = os.path.join(PROJECTS_DIR, user_project)
 
     write_state('pending', app_name, step='prepare')
-    clear_switch_marker()
+    report_switch_marker()
 
     # 1. staging: copia in una cartella temporanea, mai direttamente sul target
     staging = target + '.staging'
@@ -697,12 +774,35 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
             # la ricrea comunque
             return False, msg
 
-        # 5. swap atomico
+        # 5. aggiornamento IN PLACE del progetto (niente mv/rename su progetti
+        #    che il firmware puo' avere aperto: un rename mentre il boot legge i
+        #    file crea incoerenze difficili da spiegare). Il symlink si tocca
+        #    solo se non punta gia' al progetto.
         if os.path.exists(target):
-            run('mv "%s" "%s"' % (target, target + '.old'), check=True)
-        run('mv "%s" "%s"' % (staging, target), check=True)
-        run('ln -sfn "%s" "%s"' % (target, CURRENT_LINK), check=True)
-        sync_fs()
+            backup_dir = target + '.previous'
+            shutil.rmtree(backup_dir, ignore_errors=True)
+            try:
+                # copia di sicurezza del progetto attualmente in uso
+                run('cp -a "%s" "%s"' % (target, backup_dir), timeout=900)
+                run('rsync -a --delete "%s/" "%s/"' % (staging, target)
+                    if shutil.which('rsync')
+                    else 'cp -a "%s/." "%s/"' % (staging, target), check=True,
+                    timeout=900)
+                logger.info('progetto %s aggiornato in place', target)
+            except Exception:
+                logger.exception('aggiornamento in place fallito: ripristino la copia')
+                run('rsync -a --delete "%s/" "%s/"' % (backup_dir, target)
+                    if shutil.which('rsync')
+                    else 'cp -a "%s/." "%s/"' % (backup_dir, target), timeout=900)
+                run('rm -rf "%s"' % staging)
+                raise
+            shutil.rmtree(staging, ignore_errors=True)
+        else:
+            run('mv "%s" "%s"' % (staging, target), check=True)
+
+        if current_target() != os.path.realpath(target):
+            run('ln -sfn "%s" "%s"' % (target, CURRENT_LINK), check=True)
+            sync_fs()
 
         if current_target() != os.path.realpath(target):
             msg = 'symlink non aggiornato (current -> %s)' % current_target()
@@ -712,7 +812,8 @@ def activate_app_project(app_name, template_dir, trigger_retain_dir,
         # 6. componente ACF: registrazione sempre presente, una sola
         install_acf_component(trigger_retain_dir, project_root=target)
 
-        run('rm -rf "%s.old"' % target)
+        # la copia di sicurezza si elimina solo a switch completato
+        shutil.rmtree(target + '.previous', ignore_errors=True)
         return finish_switch(target)
     except Exception as exc:  # noqa: BLE001 - vogliamo lo stato su disco
         msg = 'errore attivazione: %s' % exc
@@ -728,7 +829,7 @@ def activate_user_project(app_name, user_project=None):
     app_dir = os.path.join(PROJECTS_DIR, app_name)
 
     write_state('pending', user_project, step='prepare')
-    clear_switch_marker()
+    report_switch_marker()
 
     if not os.path.isdir(target):
         msg = 'progetto utente assente: %s' % target
